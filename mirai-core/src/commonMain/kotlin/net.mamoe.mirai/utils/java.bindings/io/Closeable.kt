@@ -19,6 +19,7 @@ package java.io
 
 import kotlinx.io.core.Closeable
 import kotlinx.io.errors.IOException
+import net.mamoe.mirai.utils.Throws
 
 
 /**

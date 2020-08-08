@@ -29,10 +29,13 @@ import net.mamoe.mirai.qqandroid.network.Packet
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
+/*
 
+*/
 /**
  * 已废弃, 请使用 [MessageEvent]
- */
+ *//*
+
 @Deprecated(
     message = "use MessageEvent",
     replaceWith = ReplaceWith("MessageEvent", "net.mamoe.mirai.message.MessageEvent"),
@@ -130,4 +133,4 @@ public abstract class TempMessage : MessageEvent() {
     abstract override val source: OnlineMessageSource.Incoming.FromTemp
     public abstract val group: Group
     abstract override val senderName: String
-}
+}*/

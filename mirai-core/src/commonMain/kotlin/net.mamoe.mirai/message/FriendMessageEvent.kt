@@ -39,7 +39,7 @@ class FriendMessageEvent constructor(
     }
 
     @SinceMirai("1.2.0")
-    override val friend: Friend
+    val friend: Friend
         get() = sender
     override val bot: Bot get() = sender.bot
     override val subject: Friend get() = sender
