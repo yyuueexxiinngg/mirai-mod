@@ -18,3 +18,6 @@ internal actual fun InputStream.md5(): ByteArray {
     }
     return digest.digest()
 }
+
+@Suppress("ACTUAL_WITHOUT_EXPECT")
+internal actual typealias InputStream = java.io.InputStream

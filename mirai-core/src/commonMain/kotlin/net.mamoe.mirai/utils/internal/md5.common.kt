@@ -4,7 +4,15 @@ package net.mamoe.mirai.utils.internal
 
 import kotlinx.io.pool.DefaultPool
 import kotlinx.io.pool.ObjectPool
-import java.io.InputStream
+
+internal expect abstract class InputStream {
+    open fun available(): Int
+    open fun close()
+    abstract fun read(): Int
+    open fun read(b: ByteArray): Int
+    open fun read(b: ByteArray, offset: Int, len: Int): Int
+    open fun skip(n: Long): Long
+}
 
 internal expect fun InputStream.md5(): ByteArray
 internal expect fun ByteArray.md5(offset: Int = 0, length: Int = this.size - offset): ByteArray

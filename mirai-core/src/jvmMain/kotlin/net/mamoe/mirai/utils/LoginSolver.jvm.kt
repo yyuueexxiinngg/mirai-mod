@@ -30,6 +30,9 @@ import java.io.RandomAccessFile
 import javax.imageio.ImageIO
 import kotlin.coroutines.CoroutineContext
 
+@Suppress("ACTUAL_WITHOUT_EXPECT")
+internal actual typealias Throws = kotlin.jvm.Throws
+
 /**
  * 自动选择 [SwingSolver] 或 [StandardCharImageLoginSolver]
  */

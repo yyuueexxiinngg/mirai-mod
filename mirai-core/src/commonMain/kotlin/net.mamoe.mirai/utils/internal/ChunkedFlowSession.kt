@@ -15,18 +15,16 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.io.ByteReadChannel
+import kotlinx.io.InputStream
 import kotlinx.io.core.ByteReadPacket
 import kotlinx.io.core.Closeable
 import kotlinx.io.core.Input
 import kotlinx.serialization.InternalSerializationApi
-import net.mamoe.mirai.utils.MiraiExperimentalAPI
-import java.io.InputStream
 import kotlin.jvm.JvmField
 
 
-@MiraiExperimentalAPI
-public interface ChunkedFlowSession<T> : Closeable {
-    public val flow: Flow<T>
+internal interface ChunkedFlowSession<T> : Closeable {
+    val flow: Flow<T>
     override fun close()
 }
 
@@ -41,8 +39,7 @@ internal inline fun <T, R> ChunkedFlowSession<T>.map(crossinline mapper: suspend
 /**
  * 由 [chunkedFlow] 分割得到的区块
  */
-@MiraiExperimentalAPI
-public class ChunkedInput(
+internal class ChunkedInput(
     /**
      * 区块的数据.
      * 由 [ByteArrayPool] 缓存并管理, 只可在 [Flow.collect] 中访问.
@@ -50,13 +47,13 @@ public class ChunkedInput(
      *
      * **注意**: 不要将他带出 [Flow.collect] 作用域, 否则将造成内存泄露
      */
-    @JvmField public val buffer: ByteArray,
+    @JvmField val buffer: ByteArray,
     @JvmField internal var size: Int
 ) {
     /**
      * [buffer] 的有效大小
      */
-    public val bufferSize: Int get() = size
+    inline val bufferSize: Int get() = size
 }
 
 /**
