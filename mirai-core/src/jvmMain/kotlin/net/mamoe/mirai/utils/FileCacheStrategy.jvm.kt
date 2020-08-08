@@ -29,14 +29,14 @@ import kotlin.io.use
  * @see BotConfiguration.fileCacheStrategy 为 [Bot] 指定缓存策略
  */
 @MiraiExperimentalAPI
-public actual interface FileCacheStrategy {
+actual interface FileCacheStrategy {
     /**
      * 将 [input] 缓存为 [ExternalImage].
      * 此函数应 close 这个 [Input]
      */
     @MiraiExperimentalAPI
     @Throws(IOException::class)
-    public actual fun newImageCache(input: Input): ExternalImage
+    actual fun newImageCache(input: Input): ExternalImage
 
     /**
      * 将 [input] 缓存为 [ExternalImage].
@@ -44,7 +44,7 @@ public actual interface FileCacheStrategy {
      */
     @MiraiExperimentalAPI
     @Throws(IOException::class)
-    public fun newImageCache(input: InputStream): ExternalImage
+    fun newImageCache(input: InputStream): ExternalImage
 
     /**
      * 将 [input] 缓存为 [ExternalImage].
@@ -52,7 +52,7 @@ public actual interface FileCacheStrategy {
      */
     @MiraiExperimentalAPI
     @Throws(IOException::class)
-    public actual fun newImageCache(input: ByteArray): ExternalImage
+    actual fun newImageCache(input: ByteArray): ExternalImage
 
     /**
      * 将 [input] 缓存为 [ExternalImage].
@@ -60,25 +60,25 @@ public actual interface FileCacheStrategy {
      */
     @MiraiExperimentalAPI
     @Throws(IOException::class)
-    public fun newImageCache(input: BufferedImage, format: String = "png"): ExternalImage
+    fun newImageCache(input: BufferedImage, format: String = "png"): ExternalImage
 
     /**
      * 将 [input] 缓存为 [ExternalImage].
      */
     @MiraiExperimentalAPI
     @Throws(IOException::class)
-    public fun newImageCache(input: URL): ExternalImage
+    fun newImageCache(input: URL): ExternalImage
 
     /**
      * 默认的缓存方案, 使用系统临时文件夹存储.
      */
     @MiraiExperimentalAPI
-    public actual object PlatformDefault : FileCacheStrategy by TempCache(null)
+    actual object PlatformDefault : FileCacheStrategy by TempCache(null)
 
     /**
      * 使用内存直接存储所有图片文件.
      */
-    public actual object MemoryCache : FileCacheStrategy {
+    actual object MemoryCache : FileCacheStrategy {
         @MiraiExperimentalAPI
         @Throws(IOException::class)
         actual override fun newImageCache(input: Input): ExternalImage {
@@ -116,11 +116,11 @@ public actual interface FileCacheStrategy {
      * 使用系统临时文件夹缓存图片文件. 在图片使用完毕后删除临时文件.
      */
     @MiraiExperimentalAPI
-    public class TempCache @JvmOverloads constructor(
+    class TempCache @JvmOverloads constructor(
         /**
          * 缓存图片存放位置. 为 `null` 时使用主机系统的临时文件夹
          */
-        public val directory: File? = null
+        val directory: File? = null
     ) : FileCacheStrategy {
         @MiraiExperimentalAPI
         @Throws(IOException::class)

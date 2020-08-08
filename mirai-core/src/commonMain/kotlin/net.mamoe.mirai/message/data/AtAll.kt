@@ -9,7 +9,6 @@
 
 @file:JvmMultifileClass
 @file:JvmName("MessageUtils")
-@file:Suppress("MemberVisibilityCanBePrivate")
 
 package net.mamoe.mirai.message.data
 
@@ -29,26 +28,26 @@ private const val displayA = "@全体成员"
  *
  * @see At at 单个群成员
  */
-public object AtAll :
+object AtAll :
     Message.Key<AtAll>,
     MessageContent, CodableMessage {
-    public const val display: String = displayA
-    public override val typeName: String
+    const val display = displayA
+    override val typeName: String
         get() = "AtAll"
 
     @Suppress("SpellCheckingInspection")
-    public override fun toString(): String = "[mirai:atall]"
-    public override fun contentToString(): String = display
-    public override fun equals(other: Any?): Boolean {
+    override fun toString(): String = "[mirai:atall]"
+    override fun contentToString(): String = display
+    override fun equals(other: Any?): Boolean {
         return other === this
     }
 
-    public override fun hashCode(): Int {
+    override fun hashCode(): Int {
         return display.hashCode()
     }
 
     // 自动为消息补充 " "
-    public override fun followedBy(tail: Message): MessageChain {
+    override fun followedBy(tail: Message): MessageChain {
         if (tail is PlainText && tail.content.startsWith(' ')) {
             return super<MessageContent>.followedBy(tail)
         }

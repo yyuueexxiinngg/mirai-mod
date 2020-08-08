@@ -21,7 +21,7 @@ kotlin {
 
         main {
             dependencies {
-                api(kotlin("stdlib", Versions.Kotlin.stdlib))
+                api(kotlin("stdlib"))
                 runtimeOnly(project(":mirai-core-qqandroid"))
                 compileOnly("net.mamoe:mirai-core-qqandroid:0.38.0")
             }
@@ -29,7 +29,7 @@ kotlin {
 
         test {
             dependencies {
-                api(kotlin("stdlib", Versions.Kotlin.stdlib))
+                api(kotlin("stdlib"))
                 api(kotlin("test"))
                 api(kotlin("test-junit"))
                 runtimeOnly(project(":mirai-core-qqandroid"))

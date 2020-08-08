@@ -75,7 +75,7 @@ import kotlin.jvm.JvmSynthetic
  *
  * @see Contact.sendMessage 发送消息
  */
-public interface Message { // must be interface. Don't consider any changes.
+interface Message { // must be interface. Don't consider any changes.
     /**
      * 类型 Key. 由伴生对象实现, 表示一个 [Message] 对象的类型.
      *
@@ -87,11 +87,11 @@ public interface Message { // must be interface. Don't consider any changes.
      *
      * @param M 指代持有这个 Key 的消息类型
      */
-    public interface Key<out M : Message> {
+    interface Key<out M : Message> {
         /**
          * 此 [Key] 指代的 [Message] 类型名. 一般为 `class.simpleName`, 如 "QuoteReply", "PlainText"
          */
-        public val typeName: String
+        val typeName: String
     }
 
     /**
@@ -112,7 +112,7 @@ public interface Message { // must be interface. Don't consider any changes.
      * @see plus `+` 操作符重载
      */
     @JvmSynthetic // in java they should use `plus` instead
-    public fun followedBy(tail: Message): MessageChain = followedByImpl(tail)
+    fun followedBy(tail: Message): MessageChain = followedByImpl(tail)
 
     /**
      * 得到包含 mirai 消息元素代码的, 易读的字符串. 如 `At(member) + "test"` 将转为 `"[mirai:at:qqId]test"`
@@ -129,7 +129,7 @@ public interface Message { // must be interface. Don't consider any changes.
      *
      * @see contentToString 转为最接近官方格式的字符串
      */
-    public override fun toString(): String
+    override fun toString(): String
 
     /**
      * 转为最接近官方格式的字符串. 如 `At(member) + "test"` 将转为 `"@群名片 test"`.
@@ -145,7 +145,7 @@ public interface Message { // must be interface. Don't consider any changes.
      *
      * @see toString 得到包含 mirai 消息元素代码的, 易读的字符串
      */
-    public fun contentToString(): String
+    fun contentToString(): String
 
 
     /**
@@ -155,7 +155,7 @@ public interface Message { // must be interface. Don't consider any changes.
      * - `this` 与 [another] 的 [contentToString] 相等
      * - `this` 为 [another] 的所有 [MessageContent] 都 [相等][Message.equals] 且有同样的排列顺序.
      */
-    public /* final */ fun contentEquals(another: Message, ignoreCase: Boolean = false): Boolean =
+    /* final */ fun contentEquals(another: Message, ignoreCase: Boolean = false): Boolean =
         contentEqualsImpl(another, ignoreCase)
 
     /**
@@ -165,7 +165,7 @@ public interface Message { // must be interface. Don't consider any changes.
      * - [contentToString] 与 [another] 相等
      * - 若 `this` 为 [MessageChain], 则只包含 [MessageMetadata] 和 [PlainText]
      */
-    public /* final */ fun contentEquals(another: String, ignoreCase: Boolean = false): Boolean {
+    /* final */ fun contentEquals(another: String, ignoreCase: Boolean = false): Boolean {
         if (!this.contentToString().equals(another, ignoreCase = ignoreCase)) return false
         return when (this) {
             is SingleMessage -> true
@@ -175,45 +175,44 @@ public interface Message { // must be interface. Don't consider any changes.
     }
 
     /** 将 [another] 按顺序连接到这个消息的尾部. */
-    public /* final */ operator fun plus(another: MessageChain): MessageChain = this + another as Message
+    /* final */ operator fun plus(another: MessageChain): MessageChain = this + another as Message
 
     /** 将 [another] 按顺序连接到这个消息的尾部. */
-    public /* final */ operator fun plus(another: Message): MessageChain = this.followedBy(another)
+    /* final */ operator fun plus(another: Message): MessageChain = this.followedBy(another)
 
     /** 将 [another] 连接到这个消息的尾部. */
-    public /* final */ operator fun plus(another: SingleMessage): MessageChain = this.followedBy(another)
+    /* final */ operator fun plus(another: SingleMessage): MessageChain = this.followedBy(another)
 
     /** 将 [another] 作为 [PlainText] 连接到这个消息的尾部. */
-    public /* final */ operator fun plus(another: String): MessageChain = this.followedBy(another.toMessage())
+    /* final */ operator fun plus(another: String): MessageChain = this.followedBy(another.toMessage())
 
     /** 将 [another] 作为 [PlainText] 连接到这个消息的尾部. */
-    public  /* final */ operator fun plus(another: CharSequence): MessageChain =
-        this.followedBy(another.toString().toMessage())
+    /* final */ operator fun plus(another: CharSequence): MessageChain = this.followedBy(another.toString().toMessage())
 
     /** 将 [another] 按顺序连接到这个消息的尾部. */
-    public /* final */ operator fun plus(another: Iterable<Message>): MessageChain =
+    /* final */ operator fun plus(another: Iterable<Message>): MessageChain =
         another.fold(this, Message::plus).asMessageChain()
 
     /** 将 [another] 按顺序连接到这个消息的尾部. */
     @JvmName("plusIterableString")
-    public  /* final */ operator fun plus(another: Iterable<String>): MessageChain =
+    /* final */ operator fun plus(another: Iterable<String>): MessageChain =
         another.fold(this, Message::plus).asMessageChain()
 
     /** 将 [another] 按顺序连接到这个消息的尾部. */
-    public /* final */ operator fun plus(another: Sequence<Message>): MessageChain =
+    /* final */ operator fun plus(another: Sequence<Message>): MessageChain =
         another.fold(this, Message::plus).asMessageChain()
 }
 
 @MiraiExperimentalAPI
 @JvmSynthetic
-public suspend inline operator fun Message.plus(another: Flow<Message>): MessageChain =
+suspend inline operator fun Message.plus(another: Flow<Message>): MessageChain =
     another.fold(this) { acc, it -> acc + it }.asMessageChain()
 
 /**
  * [Message.contentToString] 的捷径
  */
 @get:JvmSynthetic
-public inline val Message.content: String
+inline val Message.content: String
     get() = contentToString()
 
 
@@ -226,7 +225,7 @@ public inline val Message.content: String
  * - [PlainText] 长度为 0
  * - [MessageChain] 所有元素都满足 [isContentEmpty]
  */
-public fun Message.isContentEmpty(): Boolean {
+fun Message.isContentEmpty(): Boolean {
     return when (this) {
         is MessageMetadata -> true
         is PlainText -> this.content.isEmpty()
@@ -235,9 +234,9 @@ public fun Message.isContentEmpty(): Boolean {
     }
 }
 
-public inline fun Message.isContentNotEmpty(): Boolean = !this.isContentEmpty()
+inline fun Message.isContentNotEmpty(): Boolean = !this.isContentEmpty()
 
-public inline fun Message.isPlain(): Boolean {
+inline fun Message.isPlain(): Boolean {
     contract {
         returns(true) implies (this@isPlain is PlainText)
         returns(false) implies (this@isPlain !is PlainText)
@@ -245,7 +244,7 @@ public inline fun Message.isPlain(): Boolean {
     return this is PlainText
 }
 
-public inline fun Message.isNotPlain(): Boolean {
+inline fun Message.isNotPlain(): Boolean {
     contract {
         returns(false) implies (this@isNotPlain is PlainText)
         returns(true) implies (this@isNotPlain !is PlainText)
@@ -257,7 +256,7 @@ public inline fun Message.isNotPlain(): Boolean {
  * 将此消息元素按顺序重复 [count] 次.
  */
 // inline: for future removal
-public inline fun Message.repeat(count: Int): MessageChain {
+inline fun Message.repeat(count: Int): MessageChain {
     if (this is ConstrainSingle<*>) {
         // fast-path
         return this.asMessageChain()
@@ -273,26 +272,26 @@ public inline fun Message.repeat(count: Int): MessageChain {
  * 将此消息元素按顺序重复 [count] 次.
  */
 @JvmSynthetic
-public inline operator fun Message.times(count: Int): MessageChain = this.repeat(count)
+inline operator fun Message.times(count: Int): MessageChain = this.repeat(count)
 
 /**
  * 单个消息元素. 与之相对的是 [MessageChain], 是多个 [SingleMessage] 的集合.
  */
-public interface SingleMessage : Message {
+interface SingleMessage : Message {
     @PlannedRemoval("1.2.0")
     @JvmSynthetic
     @Deprecated("for binary compatibility", level = DeprecationLevel.HIDDEN)
-    public fun length(): Int = this.toString().length
+    fun length(): Int = this.toString().length
 
     @PlannedRemoval("1.2.0")
     @JvmSynthetic
     @Deprecated("for binary compatibility", level = DeprecationLevel.HIDDEN)
-    public fun charAt(index: Int): Char = this.toString()[index]
+    fun charAt(index: Int): Char = this.toString()[index]
 
     @PlannedRemoval("1.2.0")
     @JvmSynthetic
     @Deprecated("for binary compatibility", level = DeprecationLevel.HIDDEN)
-    public fun subSequence(start: Int, end: Int): CharSequence = this.toString().subSequence(start, end)
+    fun subSequence(start: Int, end: Int): CharSequence = this.toString().subSequence(start, end)
 }
 
 /**
@@ -308,7 +307,7 @@ public interface SingleMessage : Message {
  *
  * @see ConstrainSingle 约束一个 [MessageChain] 中只存在这一种类型的元素
  */
-public interface MessageMetadata : SingleMessage {
+interface MessageMetadata : SingleMessage {
     /**
      * 返回空字符串
      */
@@ -320,12 +319,12 @@ public interface MessageMetadata : SingleMessage {
  *
  * 实现此接口的元素将会在连接时自动处理替换.
  */
-public interface ConstrainSingle<out M : Message> : MessageMetadata {
+interface ConstrainSingle<out M : Message> : MessageMetadata {
     /**
      * 用于判断是否为同一种元素的 [Key]
      * @see Key 查看更多信息
      */
-    public val key: Key<M>
+    val key: Key<M>
 }
 
 /**
@@ -342,17 +341,17 @@ public interface ConstrainSingle<out M : Message> : MessageMetadata {
  * @see ForwardMessage 合并转发
  * @see Voice 语音
  */
-public interface MessageContent : SingleMessage
+interface MessageContent : SingleMessage
 
 /**
  * 将 [this] 发送给指定联系人
  */
 @JvmSynthetic
 @Suppress("UNCHECKED_CAST")
-public suspend inline fun <C : Contact> MessageChain.sendTo(contact: C): MessageReceipt<C> =
+suspend inline fun <C : Contact> MessageChain.sendTo(contact: C): MessageReceipt<C> =
     contact.sendMessage(this) as MessageReceipt<C>
 
 @JvmSynthetic
 @Suppress("UNCHECKED_CAST")
-public suspend inline fun <C : Contact> Message.sendTo(contact: C): MessageReceipt<C> =
+suspend inline fun <C : Contact> Message.sendTo(contact: C): MessageReceipt<C> =
     contact.sendMessage(this) as MessageReceipt<C>

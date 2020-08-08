@@ -14,8 +14,6 @@ description = "Mirai serialization module"
 val isAndroidSDKAvailable: Boolean by project
 
 kotlin {
-    explicitApi()
-
     if (isAndroidSDKAvailable) {
         apply(from = rootProject.file("gradle/android.gradle"))
         android("android") {
@@ -38,7 +36,7 @@ kotlin {
 
     jvm()
 
-    sourceSets.apply {
+    sourceSets {
         all {
             languageSettings.enableLanguageFeature("InlineClasses")
             languageSettings.useExperimentalAnnotation("kotlin.Experimental")
@@ -49,16 +47,12 @@ kotlin {
             languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
             languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
             languageSettings.useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
-
-            languageSettings.languageVersion = "1.3"
-            languageSettings.apiVersion = "1.3"
-
             languageSettings.progressiveMode = true
         }
 
         val commonMain by getting {
             dependencies {
-                api(kotlin("stdlib", Versions.Kotlin.stdlib))
+                api(kotlin("stdlib"))
                 api(project(":mirai-core"))
             }
         }

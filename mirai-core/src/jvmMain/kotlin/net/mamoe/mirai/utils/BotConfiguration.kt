@@ -37,13 +37,13 @@ import java.io.File
  * ```
  */
 @Suppress("PropertyName")
-public actual open class BotConfiguration : BotConfigurationBase() { // open for Java
+actual open class BotConfiguration : BotConfigurationBase() { // open for Java
     /**
      * 设备信息覆盖. 在没有手动指定时将会通过日志警告, 并使用随机设备信息.
      * @see fileBasedDeviceInfo 使用指定文件存储设备信息
      * @see randomDeviceInfo 使用随机设备信息
      */
-    public actual var deviceInfo: ((Context) -> DeviceInfo)? = deviceInfoStub
+    actual var deviceInfo: ((Context) -> DeviceInfo)? = deviceInfoStub
 
     /**
      * 使用随机设备信息.
@@ -51,7 +51,7 @@ public actual open class BotConfiguration : BotConfigurationBase() { // open for
      * @see deviceInfo
      */
     @ConfigurationDsl
-    public actual fun randomDeviceInfo() {
+    actual fun randomDeviceInfo() {
         deviceInfo = null
     }
 
@@ -75,7 +75,7 @@ public actual open class BotConfiguration : BotConfigurationBase() { // open for
     @JvmOverloads
     @ConfigurationDsl
     @SinceMirai("1.1.0")
-    public fun redirectNetworkLogToDirectory(
+    fun redirectNetworkLogToDirectory(
         dir: File = File("logs"),
         retain: Long = 1.weeksToMillis,
         identity: (bot: Bot) -> String = { "Net ${it.id}" }
@@ -94,7 +94,7 @@ public actual open class BotConfiguration : BotConfigurationBase() { // open for
     @JvmOverloads
     @SinceMirai("1.1.0")
     @ConfigurationDsl
-    public fun redirectNetworkLogToFile(
+    fun redirectNetworkLogToFile(
         file: File = File("mirai.log"),
         identity: (bot: Bot) -> String = { "Net ${it.id}" }
     ) {
@@ -111,7 +111,7 @@ public actual open class BotConfiguration : BotConfigurationBase() { // open for
     @JvmOverloads
     @ConfigurationDsl
     @SinceMirai("1.1.0")
-    public fun redirectBotLogToDirectory(
+    fun redirectBotLogToDirectory(
         dir: File = File("logs"),
         retain: Long = 1.weeksToMillis,
         identity: (bot: Bot) -> String = { "Net ${it.id}" }
@@ -130,7 +130,7 @@ public actual open class BotConfiguration : BotConfigurationBase() { // open for
     @JvmOverloads
     @ConfigurationDsl
     @SinceMirai("1.1.0")
-    public fun redirectBotLogToFile(
+    fun redirectBotLogToFile(
         file: File = File("mirai.log"),
         identity: (bot: Bot) -> String = { "Net ${it.id}" }
     ) {
@@ -140,9 +140,9 @@ public actual open class BotConfiguration : BotConfigurationBase() { // open for
     }
 
     @Suppress("ACTUAL_WITHOUT_EXPECT")
-    public actual enum class MiraiProtocol actual constructor(
+    actual enum class MiraiProtocol actual constructor(
         /** 协议模块使用的 ID */
-        @JvmField internal actual val id: Long
+        @JvmField actual internal val id: Long
     ) {
         /**
          * Android 手机.
@@ -161,10 +161,10 @@ public actual open class BotConfiguration : BotConfigurationBase() { // open for
         ANDROID_WATCH(537061176)
     }
 
-    public actual companion object {
+    actual companion object {
         /** 默认的配置实例. 可以进行修改 */
         @JvmStatic
-        public actual val Default: BotConfiguration = BotConfiguration()
+        actual val Default = BotConfiguration()
     }
 
     /**
@@ -176,11 +176,11 @@ public actual open class BotConfiguration : BotConfigurationBase() { // open for
      */
     @JvmOverloads
     @ConfigurationDsl
-    public fun fileBasedDeviceInfo(filepath: String = "device.json") {
+    fun fileBasedDeviceInfo(filepath: String = "device.json") {
         deviceInfo = getFileBasedDeviceInfoSupplier(filepath)
     }
 
-    public actual fun copy(): BotConfiguration {
+    actual fun copy(): BotConfiguration {
         return BotConfiguration().also { new ->
             new.botLoggerSupplier = botLoggerSupplier
             new.networkLoggerSupplier = networkLoggerSupplier

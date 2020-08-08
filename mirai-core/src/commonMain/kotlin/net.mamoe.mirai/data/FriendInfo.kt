@@ -12,8 +12,8 @@ package net.mamoe.mirai.data
 import net.mamoe.mirai.LowLevelAPI
 
 @LowLevelAPI
-public interface FriendInfo {
-    public val uin: Long
+interface FriendInfo {
+    val uin: Long
 
-    public val nick: String
+    val nick: String
 }

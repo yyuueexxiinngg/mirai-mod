@@ -13,4 +13,4 @@ package net.mamoe.mirai.utils
  * On Android, typealias to `android.content.Context`
  * On JVM, empty class.
  */
-public expect abstract class Context
+expect abstract class Context

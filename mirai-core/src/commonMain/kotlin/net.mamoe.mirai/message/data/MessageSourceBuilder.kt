@@ -28,7 +28,7 @@ import kotlin.jvm.JvmSynthetic
  * 将在线消息源转换为离线消息源.
  */
 @JvmName("toOfflineMessageSource")
-public fun OnlineMessageSource.toOffline(): OfflineMessageSource =
+fun OnlineMessageSource.toOffline(): OfflineMessageSource =
     OfflineMessageSourceByOnline(this)
 
 ///////////////
@@ -43,25 +43,25 @@ public fun OnlineMessageSource.toOffline(): OfflineMessageSource =
  */
 @MiraiExperimentalAPI
 @JvmName("copySource")
-public fun MessageSource.copyAmend(
+fun MessageSource.copyAmend(
     block: MessageSourceAmender.() -> Unit
 ): OfflineMessageSource = toMutableOffline().apply(block)
 
 /**
  * 仅于 [copyAmend] 中修改 [MessageSource]
  */
-public interface MessageSourceAmender {
-    public var kind: OfflineMessageSource.Kind
-    public var fromUin: Long
-    public var targetUin: Long
-    public var id: Int
-    public var time: Int
-    public var internalId: Int
+interface MessageSourceAmender {
+    var kind: OfflineMessageSource.Kind
+    var fromUin: Long
+    var targetUin: Long
+    var id: Int
+    var time: Int
+    var internalId: Int
 
-    public var originalMessage: MessageChain
+    var originalMessage: MessageChain
 
     /** 从另一个 [MessageSource] 中复制 [id], [internalId], [time]*/
-    public fun metadataFrom(another: MessageSource) {
+    fun metadataFrom(another: MessageSource) {
         this.id = another.id
         this.internalId = another.internalId
         this.time = another.time
@@ -104,7 +104,7 @@ public interface MessageSourceAmender {
  */
 @JvmSynthetic
 @MiraiExperimentalAPI
-public fun Bot.buildMessageSource(block: MessageSourceBuilder.() -> Unit): MessageSource {
+fun Bot.buildMessageSource(block: MessageSourceBuilder.() -> Unit): MessageSource {
     val builder = MessageSourceBuilderImpl().apply(block)
     return constructMessageSource(
         builder.kind ?: error("You must call `Contact.sendTo(Contact)` when `buildMessageSource`"),
@@ -120,7 +120,7 @@ public fun Bot.buildMessageSource(block: MessageSourceBuilder.() -> Unit): Messa
 /**
  * @see buildMessageSource
  */
-public abstract class MessageSourceBuilder {
+abstract class MessageSourceBuilder {
     internal abstract var kind: OfflineMessageSource.Kind?
     internal abstract var fromUin: Long
     internal abstract var targetUin: Long
@@ -132,22 +132,22 @@ public abstract class MessageSourceBuilder {
     @PublishedApi
     internal val originalMessages: MessageChainBuilder = MessageChainBuilder()
 
-    public fun time(from: MessageSource): MessageSourceBuilder = apply { this.time = from.time }
-    public val now: Int get() = currentTimeSeconds.toInt()
-    public fun time(value: Int): MessageSourceBuilder = apply { this.time = value }
+    fun time(from: MessageSource): MessageSourceBuilder = apply { this.time = from.time }
+    val now: Int get() = currentTimeSeconds.toInt()
+    fun time(value: Int) = apply { this.time = value }
 
-    public fun internalId(from: MessageSource): MessageSourceBuilder = apply { this.internalId = from.internalId }
-    public fun internalId(value: Int): MessageSourceBuilder = apply { this.internalId = value }
+    fun internalId(from: MessageSource): MessageSourceBuilder = apply { this.internalId = from.internalId }
+    fun internalId(value: Int): MessageSourceBuilder = apply { this.internalId = value }
 
-    public fun id(from: MessageSource): MessageSourceBuilder = apply { this.id = from.id }
-    public fun id(value: Int): MessageSourceBuilder = apply { this.id = value }
+    fun id(from: MessageSource): MessageSourceBuilder = apply { this.id = from.id }
+    fun id(value: Int): MessageSourceBuilder = apply { this.id = value }
 
 
     /**
      * 从另一个 [MessageSource] 复制 [id], [time], [internalId].
      * 这三个数据决定官方客户端能 "定位" 到的原消息
      */
-    public fun metadata(from: MessageSource): MessageSourceBuilder = apply {
+    fun metadata(from: MessageSource): MessageSourceBuilder = apply {
         id(from)
         internalId(from)
         time(from)
@@ -156,7 +156,7 @@ public abstract class MessageSourceBuilder {
     /**
      * 从另一个 [MessageSource] 复制所有信息, 包括消息内容. 不会清空已有消息.
      */
-    public fun allFrom(source: MessageSource): MessageSourceBuilder {
+    fun allFrom(source: MessageSource): MessageSourceBuilder {
         this.kind = determineKind(source)
         this.id = source.id
         this.time = source.time
@@ -171,35 +171,34 @@ public abstract class MessageSourceBuilder {
     /**
      * 从另一个 [MessageSource] 复制 [消息内容][MessageSource.originalMessage]. 不会清空已有消息.
      */
-    public fun messagesFrom(source: MessageSource): MessageSourceBuilder = apply {
+    fun messagesFrom(source: MessageSource): MessageSourceBuilder = apply {
         this.originalMessages.addAll(source.originalMessage)
     }
 
-    public fun messages(messages: Iterable<Message>): MessageSourceBuilder = apply {
+    fun messages(messages: Iterable<Message>): MessageSourceBuilder = apply {
         this.originalMessages.addAll(messages)
     }
 
-    public fun messages(vararg message: Message): MessageSourceBuilder = apply {
+    fun messages(vararg message: Message): MessageSourceBuilder = apply {
         for (it in message) {
             this.originalMessages.add(it)
         }
     }
 
     @JvmSynthetic
-    public inline fun messages(block: MessageChainBuilder.() -> Unit): MessageSourceBuilder = apply {
+    inline fun messages(block: MessageChainBuilder.() -> Unit): MessageSourceBuilder = apply {
         this.originalMessages.apply(block)
     }
 
-    public fun clearMessages(): MessageSourceBuilder = apply { this.originalMessages.clear() }
+    fun clearMessages(): MessageSourceBuilder = apply { this.originalMessages.clear() }
 
     /**
      * 设置 [发送人][this] 和 [发送目标][target], 并自动判断 [kind]
      */
     @JvmSynthetic
-    public abstract infix fun ContactOrBot.sendTo(target: ContactOrBot): MessageSourceBuilder
+    abstract infix fun ContactOrBot.sendTo(target: ContactOrBot): MessageSourceBuilder
 
-    public fun setSenderAndTarget(sender: ContactOrBot, target: ContactOrBot): MessageSourceBuilder =
-        sender sendTo target
+    fun setSenderAndTarget(sender: ContactOrBot, target: ContactOrBot) = sender sendTo target
 }
 
 

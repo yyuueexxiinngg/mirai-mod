@@ -27,11 +27,11 @@ import net.mamoe.mirai.utils.SinceMirai
  *
  * @see MessageEvent
  */
-public class FriendMessageEvent constructor(
-    public override val sender: Friend,
-    public override val message: MessageChain,
-    public override val time: Int
-) : @PlannedRemoval("1.2.0") FriendMessage(), BroadcastControllable, @SinceMirai("1.2.0") FriendEvent {
+class FriendMessageEvent constructor(
+    override val sender: Friend,
+    override val message: MessageChain,
+    override val time: Int
+) : @PlannedRemoval("1.2.0") FriendMessage(), BroadcastControllable {
     init {
         val source =
             message[MessageSource] ?: throw IllegalArgumentException("Cannot find MessageSource from message")
@@ -39,12 +39,12 @@ public class FriendMessageEvent constructor(
     }
 
     @SinceMirai("1.2.0")
-    public override val friend: Friend
+    override val friend: Friend
         get() = sender
-    public override val bot: Bot get() = super.bot
-    public override val subject: Friend get() = sender
-    public override val senderName: String get() = sender.nick
-    public override val source: OnlineMessageSource.Incoming.FromFriend get() = message.source as OnlineMessageSource.Incoming.FromFriend
+    override val bot: Bot get() = sender.bot
+    override val subject: Friend get() = sender
+    override val senderName: String get() = sender.nick
+    override val source: OnlineMessageSource.Incoming.FromFriend get() = message.source as OnlineMessageSource.Incoming.FromFriend
 
-    public override fun toString(): String = "FriendMessageEvent(sender=${sender.id}, message=$message)"
+    override fun toString(): String = "FriendMessageEvent(sender=${sender.id}, message=$message)"
 }

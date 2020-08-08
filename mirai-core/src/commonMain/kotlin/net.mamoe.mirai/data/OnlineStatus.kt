@@ -14,12 +14,11 @@ package net.mamoe.mirai.data
 /**
  * 在线状态
  */
-public enum class OnlineStatus(public val id: Int) {
+enum class OnlineStatus(val id: Int) {
     /**
      * 我在线上
      */
     ONLINE(11),
-
     /**
      * 离线
      */
@@ -39,17 +38,14 @@ public enum class OnlineStatus(public val id: Int) {
      * 忙碌
      */
     BUSY(50),
-
     /**
      * Q 我吧
      */
     Q_ME(60),
-
     /**
      * 请勿打扰
      */
     DND(70),
-
     /**
      * 离线但接收消息
      */
@@ -60,8 +56,8 @@ public enum class OnlineStatus(public val id: Int) {
      */
     UNKNOWN(-1);
 
-    public companion object {
-        public fun ofId(id: Int): OnlineStatus = values().first { it.id == id }
-        public fun ofIdOrNull(id: Int): OnlineStatus? = values().firstOrNull { it.id == id }
+    companion object {
+        fun ofId(id: Int): OnlineStatus = values().first { it.id == id }
+        fun ofIdOrNull(id: Int): OnlineStatus? = values().firstOrNull { it.id == id }
     }
 }

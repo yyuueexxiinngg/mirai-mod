@@ -9,61 +9,61 @@ import net.mamoe.mirai.LowLevelAPI
  * 通过 [Bot._lowLevelQueryGroupInfo] 得到
  */
 @LowLevelAPI
-public interface GroupInfo {
+interface GroupInfo {
     /**
      * Uin
      */
-    public val uin: Long
+    val uin: Long
 
     /**
      * 群号码
      */ // 由 uin 计算得到
-    public val groupCode: Long
+    val groupCode: Long
 
     /**
      * 名称
      */
-    public val name: String // 不一定能获取到
+    val name: String // 不一定能获取到
 
     /**
      * 群主
      */
-    public val owner: Long // 不一定能获取到
+    val owner: Long // 不一定能获取到
 
     /**
      * 入群公告
      */
-    public val memo: String // 不一定能获取到
+    val memo: String // 不一定能获取到
 
     /**
      * 允许群员邀请其他人加入群
      */
-    public val allowMemberInvite: Boolean
+    val allowMemberInvite: Boolean
 
     /**
      * 允许匿名聊天
      */
-    public val allowAnonymousChat: Boolean
+    val allowAnonymousChat: Boolean
 
     /**
      * 自动审批加群请求
      */
-    public val autoApprove: Boolean
+    val autoApprove: Boolean
 
     /**
      * 坦白说开启状态
      */
-    public val confessTalk: Boolean
+    val confessTalk: Boolean
 
     /**
      * 全员禁言
      */
-    public val muteAll: Boolean
+    val muteAll: Boolean
 
     /**
      * 机器人被禁言还剩时间, 秒.
      */
-    public val botMuteTimestamp: Int
+    val botMuteTimestamp: Int
 
     /*
     /**

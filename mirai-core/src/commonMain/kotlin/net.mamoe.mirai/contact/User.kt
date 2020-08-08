@@ -32,21 +32,21 @@ import kotlin.jvm.JvmSynthetic
  *
  * 对于同一个 [Bot] 任何一个人的 [User] 实例都是单一的.
  */
-public abstract class User : Contact(), CoroutineScope {
+abstract class User : Contact(), CoroutineScope {
     /**
      * QQ 号码
      */
-    public abstract override val id: Long
+    abstract override val id: Long
 
     /**
      * 昵称
      */
-    public abstract val nick: String
+    abstract val nick: String
 
     /**
      * 头像下载链接
      */
-    public open val avatarUrl: String
+    open val avatarUrl: String
         get() = "http://q1.qlogo.cn/g?b=qq&nk=$id&s=640"
 
     /**
@@ -65,7 +65,7 @@ public abstract class User : Contact(), CoroutineScope {
      * @return 消息回执. 可进行撤回 ([MessageReceipt.recall])
      */
     @JvmSynthetic
-    public abstract override suspend fun sendMessage(message: Message): MessageReceipt<User>
+    abstract override suspend fun sendMessage(message: Message): MessageReceipt<User>
 
     /**
      * @see sendMessage
@@ -73,7 +73,7 @@ public abstract class User : Contact(), CoroutineScope {
     @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "VIRTUAL_MEMBER_HIDDEN", "OVERRIDE_BY_INLINE")
     @kotlin.internal.InlineOnly
     @JvmSynthetic
-    public suspend inline fun sendMessage(message: String): MessageReceipt<User> {
+    suspend inline fun sendMessage(message: String): MessageReceipt<User> {
         return sendMessage(message.toMessage())
     }
 
@@ -89,7 +89,7 @@ public abstract class User : Contact(), CoroutineScope {
      * @throws OverFileSizeMaxException 当图片文件过大而被服务器拒绝上传时. (最大大小约为 20 MB)
      */
     @JvmSynthetic
-    public abstract override suspend fun uploadImage(image: ExternalImage): Image
+    abstract override suspend fun uploadImage(image: ExternalImage): Image
 
-    public abstract override fun toString(): String
+    abstract override fun toString(): String
 }

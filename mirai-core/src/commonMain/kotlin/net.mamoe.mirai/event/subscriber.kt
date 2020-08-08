@@ -42,7 +42,7 @@ import kotlin.reflect.KClass
 /**
  * 订阅者的状态
  */
-public enum class ListeningStatus {
+enum class ListeningStatus {
     /**
      * 表示继续监听
      */
@@ -65,9 +65,9 @@ public enum class ListeningStatus {
  *
  * 取消监听: [complete]
  */
-public interface Listener<in E : Event> : CompletableJob {
+interface Listener<in E : Event> : CompletableJob {
 
-    public enum class ConcurrencyKind {
+    enum class ConcurrencyKind {
         /**
          * 并发地同时处理多个事件, 但无法保证 [onEvent] 返回 [ListeningStatus.STOPPED] 后立即停止事件监听.
          */
@@ -82,7 +82,7 @@ public interface Listener<in E : Event> : CompletableJob {
     /**
      * 并发类型
      */
-    public val concurrencyKind: ConcurrencyKind
+    val concurrencyKind: ConcurrencyKind
 
     /**
      * 事件优先级.
@@ -96,7 +96,7 @@ public interface Listener<in E : Event> : CompletableJob {
      *
      * 当事件被 [拦截][Event.intercept] 后, 优先级较低 (靠右) 的监听器将不会被调用.
      */
-    public enum class EventPriority {
+    enum class EventPriority {
 
         HIGHEST, HIGH, NORMAL, LOW, LOWEST,
 
@@ -108,7 +108,7 @@ public interface Listener<in E : Event> : CompletableJob {
          */
         MONITOR;
 
-        internal companion object {
+        companion object {
             @JvmStatic
             internal val valuesExceptMonitor: Array<EventPriority> = arrayOf(HIGHEST, HIGH, NORMAL, LOW, LOWEST)
         }
@@ -118,17 +118,17 @@ public interface Listener<in E : Event> : CompletableJob {
      * 事件优先级
      * @see [EventPriority]
      */
-    public val priority: EventPriority get() = NORMAL
+    val priority: EventPriority get() = NORMAL
 
     /**
      * 这个方法将会调用 [CoroutineScope.subscribe] 时提供的参数 `noinline handler: suspend E.(E) -> ListeningStatus`.
      *
      * 这个函数不会抛出任何异常, 详见 [CoroutineScope.subscribe]
      */
-    public suspend fun onEvent(event: E): ListeningStatus
+    suspend fun onEvent(event: E): ListeningStatus
 }
 
-public typealias EventPriority = Listener.EventPriority
+typealias EventPriority = Listener.EventPriority
 
 // region subscribe / subscribeAlways / subscribeOnce
 
@@ -210,7 +210,7 @@ public typealias EventPriority = Listener.EventPriority
  * @see subscribeFriendMessages 监听好友消息 DSL
  * @see subscribeTempMessages   监听临时会话消息 DSL
  */
-public inline fun <reified E : Event> CoroutineScope.subscribe(
+inline fun <reified E : Event> CoroutineScope.subscribe(
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     concurrency: Listener.ConcurrencyKind = LOCKED,
     priority: Listener.EventPriority = NORMAL,
@@ -224,7 +224,7 @@ public inline fun <reified E : Event> CoroutineScope.subscribe(
  *
  * @return 监听器实例. 此监听器已经注册到指定事件上, 在事件广播时将会调用 [handler]
  */
-public fun <E : Event> CoroutineScope.subscribe(
+fun <E : Event> CoroutineScope.subscribe(
     eventClass: KClass<out E>,
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     concurrency: Listener.ConcurrencyKind = LOCKED,
@@ -247,7 +247,7 @@ public fun <E : Event> CoroutineScope.subscribe(
  *
  * @see CoroutineScope.subscribe 获取更多说明
  */
-public inline fun <reified E : Event> CoroutineScope.subscribeAlways(
+inline fun <reified E : Event> CoroutineScope.subscribeAlways(
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     concurrency: Listener.ConcurrencyKind = CONCURRENT,
     priority: Listener.EventPriority = NORMAL,
@@ -259,7 +259,7 @@ public inline fun <reified E : Event> CoroutineScope.subscribeAlways(
  * @see CoroutineScope.subscribe
  * @see CoroutineScope.subscribeAlways
  */
-public fun <E : Event> CoroutineScope.subscribeAlways(
+fun <E : Event> CoroutineScope.subscribeAlways(
     eventClass: KClass<out E>,
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     concurrency: Listener.ConcurrencyKind = CONCURRENT,
@@ -282,7 +282,7 @@ public fun <E : Event> CoroutineScope.subscribeAlways(
  * @see CoroutineScope.subscribe 获取更多说明
  */
 @JvmSynthetic
-public inline fun <reified E : Event> CoroutineScope.subscribeOnce(
+inline fun <reified E : Event> CoroutineScope.subscribeOnce(
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     priority: Listener.EventPriority = NORMAL,
     noinline handler: suspend E.(E) -> Unit
@@ -291,7 +291,7 @@ public inline fun <reified E : Event> CoroutineScope.subscribeOnce(
 /**
  * @see CoroutineScope.subscribeOnce
  */
-public fun <E : Event> CoroutineScope.subscribeOnce(
+fun <E : Event> CoroutineScope.subscribeOnce(
     eventClass: KClass<out E>,
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     priority: Listener.EventPriority = NORMAL,
@@ -321,7 +321,7 @@ public fun <E : Event> CoroutineScope.subscribeOnce(
 @JvmSynthetic
 @LowPriorityInOverloadResolution
 @JvmName("subscribe1")
-public inline fun <reified E : Event> CoroutineScope.subscribe(
+inline fun <reified E : Event> CoroutineScope.subscribe(
     crossinline handler: (E) -> ListeningStatus,
     priority: Listener.EventPriority = NORMAL,
     concurrency: Listener.ConcurrencyKind = CONCURRENT,
@@ -342,7 +342,7 @@ public inline fun <reified E : Event> CoroutineScope.subscribe(
 @JvmSynthetic
 @LowPriorityInOverloadResolution
 @JvmName("subscribe2")
-public inline fun <reified E : Event> CoroutineScope.subscribe(
+inline fun <reified E : Event> CoroutineScope.subscribe(
     crossinline handler: E.(E) -> ListeningStatus,
     priority: Listener.EventPriority = NORMAL,
     concurrency: Listener.ConcurrencyKind = CONCURRENT,
@@ -363,7 +363,7 @@ public inline fun <reified E : Event> CoroutineScope.subscribe(
 @JvmSynthetic
 @LowPriorityInOverloadResolution
 @JvmName("subscribe1")
-public inline fun <reified E : Event> CoroutineScope.subscribe(
+inline fun <reified E : Event> CoroutineScope.subscribe(
     crossinline handler: suspend (E) -> ListeningStatus,
     priority: Listener.EventPriority = NORMAL,
     concurrency: Listener.ConcurrencyKind = CONCURRENT,
@@ -384,7 +384,7 @@ public inline fun <reified E : Event> CoroutineScope.subscribe(
 @JvmSynthetic
 @LowPriorityInOverloadResolution
 @JvmName("subscribe3")
-public inline fun <reified E : Event> CoroutineScope.subscribe(
+inline fun <reified E : Event> CoroutineScope.subscribe(
     crossinline handler: suspend E.(E) -> ListeningStatus,
     priority: Listener.EventPriority = NORMAL,
     concurrency: Listener.ConcurrencyKind = CONCURRENT,
@@ -410,7 +410,7 @@ public inline fun <reified E : Event> CoroutineScope.subscribe(
 @JvmSynthetic
 @LowPriorityInOverloadResolution
 @JvmName("subscribeAlways1")
-public inline fun <reified E : Event> CoroutineScope.subscribeAlways(
+inline fun <reified E : Event> CoroutineScope.subscribeAlways(
     crossinline handler: (E) -> Unit,
     priority: Listener.EventPriority = NORMAL,
     concurrency: Listener.ConcurrencyKind = CONCURRENT,
@@ -429,7 +429,7 @@ public inline fun <reified E : Event> CoroutineScope.subscribeAlways(
 @JvmSynthetic
 @LowPriorityInOverloadResolution
 @JvmName("subscribeAlways1")
-public inline fun <reified E : Event> CoroutineScope.subscribeAlways(
+inline fun <reified E : Event> CoroutineScope.subscribeAlways(
     crossinline handler: E.(E) -> Unit,
     priority: Listener.EventPriority = NORMAL,
     concurrency: Listener.ConcurrencyKind = CONCURRENT,
@@ -448,7 +448,7 @@ public inline fun <reified E : Event> CoroutineScope.subscribeAlways(
 @JvmSynthetic
 @LowPriorityInOverloadResolution
 @JvmName("subscribe4")
-public inline fun <reified E : Event> CoroutineScope.subscribeAlways(
+inline fun <reified E : Event> CoroutineScope.subscribeAlways(
     crossinline handler: suspend (E) -> Unit,
     priority: Listener.EventPriority = NORMAL,
     concurrency: Listener.ConcurrencyKind = CONCURRENT,
@@ -467,7 +467,7 @@ public inline fun <reified E : Event> CoroutineScope.subscribeAlways(
 @JvmSynthetic
 @LowPriorityInOverloadResolution
 @JvmName("subscribe1")
-public inline fun <reified E : Event> CoroutineScope.subscribeAlways(
+inline fun <reified E : Event> CoroutineScope.subscribeAlways(
     crossinline handler: suspend E.(E) -> Unit,
     priority: Listener.EventPriority = NORMAL,
     concurrency: Listener.ConcurrencyKind = CONCURRENT,

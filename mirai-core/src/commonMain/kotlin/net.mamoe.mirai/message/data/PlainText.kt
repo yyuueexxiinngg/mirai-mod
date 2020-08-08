@@ -23,8 +23,8 @@ import kotlin.jvm.JvmSynthetic
  *
  * 一般不需要主动构造 [PlainText], [Message] 可直接与 [String] 相加. Java 用户请使用 [Message.plus]
  */
-public data class PlainText(
-    public val content: String
+data class PlainText(
+    val content: String
 ) : MessageContent {
 
     @PlannedRemoval("1.2.0")
@@ -33,17 +33,17 @@ public data class PlainText(
         level = DeprecationLevel.ERROR,
         replaceWith = ReplaceWith("content")
     )
-    public val stringValue: String
+    val stringValue: String
         get() = content
 
     @Suppress("unused")
-    public constructor(charSequence: CharSequence) : this(charSequence.toString())
+    constructor(charSequence: CharSequence) : this(charSequence.toString())
 
-    public override fun toString(): String = content
-    public override fun contentToString(): String = content
+    override fun toString(): String = content
+    override fun contentToString(): String = content
 
-    public companion object Key : Message.Key<PlainText> {
-        public override val typeName: String get() = "PlainText"
+    companion object Key : Message.Key<PlainText> {
+        override val typeName: String get() = "PlainText"
     }
 }
 
@@ -52,4 +52,4 @@ public data class PlainText(
  */
 @JvmSynthetic
 @Suppress("NOTHING_TO_INLINE")
-public inline fun String.toMessage(): PlainText = PlainText(this)
+inline fun String.toMessage(): PlainText = PlainText(this)

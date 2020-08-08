@@ -21,14 +21,14 @@ kotlin {
 
         main {
             dependencies {
-                api(kotlin("stdlib", Versions.Kotlin.stdlib))
+                api(kotlin("stdlib"))
                 api(project(":mirai-core-qqandroid"))
             }
         }
 
         test {
             dependencies {
-                api(kotlin("stdlib", Versions.Kotlin.stdlib))
+                api(kotlin("stdlib"))
                 api(kotlin("test"))
                 api(kotlin("test-junit"))
                 api(project(":mirai-core-qqandroid"))

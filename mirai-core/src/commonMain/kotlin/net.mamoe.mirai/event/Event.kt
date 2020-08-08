@@ -44,7 +44,7 @@ import kotlin.jvm.Volatile
  *
  * @see CancellableEvent 可被取消的事件
  */
-public interface Event {
+interface Event {
     /**
      * 事件是否已被拦截.
      *
@@ -52,7 +52,7 @@ public interface Event {
      *
      * @see intercept 拦截事件
      */
-    public val isIntercepted: Boolean
+    val isIntercepted: Boolean
 
     /**
      * 拦截这个事件
@@ -64,7 +64,7 @@ public interface Event {
      * @see Listener.EventPriority 查看优先级相关信息
      */
     @SinceMirai("1.0.0")
-    public fun intercept()
+    fun intercept()
 }
 
 /**
@@ -72,12 +72,11 @@ public interface Event {
  *
  * 在使用事件时应使用类型 [Event]. 在实现自定义事件时应继承 [AbstractEvent].
  */
-public abstract class AbstractEvent : Event {
+abstract class AbstractEvent : Event {
     /** 限制一个事件实例不能并行广播. (适用于 object 广播的情况) */
     @JvmField
     internal val broadCastLock = Mutex()
 
-    @Suppress("PropertyName")
     @JvmField
     @Volatile
     internal var _intercepted = false
@@ -90,13 +89,13 @@ public abstract class AbstractEvent : Event {
      * @see Event.isIntercepted
      */
     @SinceMirai("1.0.0")
-    public override val isIntercepted: Boolean
+    override val isIntercepted: Boolean
         get() = _intercepted
 
     /**
      * @see Event.intercept
      */
-    public override fun intercept() {
+    override fun intercept() {
         _intercepted = true
     }
 
@@ -104,12 +103,12 @@ public abstract class AbstractEvent : Event {
     /**
      * @see CancellableEvent.isCancelled
      */
-    public val isCancelled: Boolean get() = _cancelled
+    val isCancelled: Boolean get() = _cancelled
 
     /**
      * @see CancellableEvent.cancel
      */
-    public fun cancel() {
+    fun cancel() {
         check(this is CancellableEvent) {
             "Event $this is not cancellable"
         }
@@ -120,14 +119,14 @@ public abstract class AbstractEvent : Event {
 /**
  * 可被取消的事件
  */
-public interface CancellableEvent : Event {
+interface CancellableEvent : Event {
     /**
      * 事件是否已被取消.
      *
      * 事件需实现 [CancellableEvent] 接口才可以被取消,
      * 否则此属性固定返回 false.
      */
-    public val isCancelled: Boolean
+    val isCancelled: Boolean
 
     /**
      * 取消这个事件.
@@ -135,7 +134,7 @@ public interface CancellableEvent : Event {
      *
      * @throws IllegalStateException 当事件未实现接口 [CancellableEvent] 时抛出
      */
-    public fun cancel()
+    fun cancel()
 }
 
 /**
@@ -147,7 +146,7 @@ public interface CancellableEvent : Event {
  * @see __broadcastJava Java 使用
  */
 @JvmSynthetic
-public suspend fun <E : Event> E.broadcast(): E = apply {
+suspend fun <E : Event> E.broadcast(): E = apply {
     check(this is AbstractEvent) {
         "Events must extend AbstractEvent"
     }
@@ -169,7 +168,7 @@ public suspend fun <E : Event> E.broadcast(): E = apply {
 @Suppress("FunctionName")
 @JvmName("broadcast")
 @JavaFriendlyAPI
-public fun <E : Event> E.__broadcastJava(): E = apply {
+fun <E : Event> E.__broadcastJava(): E = apply {
     if (this is BroadcastControllable && !this.shouldBroadcast) {
         return@apply
     }
@@ -181,16 +180,16 @@ public fun <E : Event> E.__broadcastJava(): E = apply {
  * 所有的 `subscribe` 都能正常添加到监听器列表, 但所有的广播都会直接返回.
  */
 @MiraiExperimentalAPI
-public var EventDisabled: Boolean = false
+var EventDisabled = false
 
 /**
  * 可控制是否需要广播这个事件
  */
-public interface BroadcastControllable : Event {
+interface BroadcastControllable : Event {
     /**
      * 返回 `false` 时将不会广播这个事件.
      */
-    public val shouldBroadcast: Boolean
+    val shouldBroadcast: Boolean
         get() = true
 }
 

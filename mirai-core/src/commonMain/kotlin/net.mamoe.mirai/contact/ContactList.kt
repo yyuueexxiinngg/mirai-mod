@@ -22,24 +22,24 @@ import kotlin.jvm.JvmField
  * @see ContactList.asSequence
  */
 @Suppress("unused")
-public class ContactList<C : Contact>
+class ContactList<C : Contact>
 internal constructor(@JvmField internal val delegate: LockFreeLinkedList<C>) : Collection<C> {
 
-    public operator fun get(id: Long): C =
+    operator fun get(id: Long): C =
         delegate.asSequence().firstOrNull { it.id == id } ?: throw NoSuchElementException("Contact id $id")
 
-    public fun getOrNull(id: Long): C? = delegate.getOrNull(id)
+    fun getOrNull(id: Long): C? = delegate.getOrNull(id)
 
-    public override val size: Int get() = delegate.size
-    public override operator fun contains(element: C): Boolean = delegate.contains(element)
-    public operator fun contains(id: Long): Boolean = delegate.getOrNull(id) != null
-    public override fun containsAll(elements: Collection<C>): Boolean = elements.all { contains(it) }
-    public override fun isEmpty(): Boolean = delegate.isEmpty()
+    override val size: Int get() = delegate.size
+    override operator fun contains(element: C): Boolean = delegate.contains(element)
+    operator fun contains(id: Long): Boolean = delegate.getOrNull(id) != null
+    override fun containsAll(elements: Collection<C>): Boolean = elements.all { contains(it) }
+    override fun isEmpty(): Boolean = delegate.isEmpty()
 
-    public override fun toString(): String =
+    override fun toString(): String =
         delegate.asSequence().joinToString(separator = ", ", prefix = "ContactList(", postfix = ")")
 
-    public override fun iterator(): Iterator<C> {
+    override fun iterator(): Iterator<C> {
         return this.delegate.asSequence().iterator()
     }
 }
@@ -51,7 +51,7 @@ internal constructor(@JvmField internal val delegate: LockFreeLinkedList<C>) : C
  * [123456, 321654, 123654]
  * ```
  */
-public val ContactList<*>.idContentString: String
+val ContactList<*>.idContentString: String
     get() = "[" + buildString { delegate.forEach { append(it.id).append(", ") } }.dropLast(
         2
     ) + "]"

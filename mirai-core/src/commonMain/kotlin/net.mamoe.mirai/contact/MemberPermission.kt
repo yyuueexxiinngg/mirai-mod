@@ -26,7 +26,7 @@ import kotlin.internal.InlineOnly
  * @see Member.isOperator 对 [Member] 的扩展函数, 判断此成员是否为管理员或群主
  * @see Member.isAdministrator 对 [Member] 的扩展函数, 判断此成员是否为管理员
  */
-public enum class MemberPermission : Comparable<MemberPermission> {
+enum class MemberPermission : Comparable<MemberPermission> {
     /**
      * 一般群成员
      */
@@ -45,7 +45,7 @@ public enum class MemberPermission : Comparable<MemberPermission> {
     /**
      * 权限等级. [OWNER] 为 2, [ADMINISTRATOR] 为 1, [MEMBER] 为 0
      */
-    public val level: Int
+    val level: Int
         get() = ordinal
 }
 
@@ -53,44 +53,44 @@ public enum class MemberPermission : Comparable<MemberPermission> {
  * 判断权限是否为群主
  */
 @InlineOnly
-public inline fun MemberPermission.isOwner(): Boolean = this == MemberPermission.OWNER
+inline fun MemberPermission.isOwner(): Boolean = this == MemberPermission.OWNER
 
 /**
  * 判断权限是否为管理员
  */
 @InlineOnly
-public inline fun MemberPermission.isAdministrator(): Boolean = this == MemberPermission.ADMINISTRATOR
+inline fun MemberPermission.isAdministrator(): Boolean = this == MemberPermission.ADMINISTRATOR
 
 /**
  * 判断权限是否为管理员或群主
  */
 @InlineOnly
-public inline fun MemberPermission.isOperator(): Boolean = isAdministrator() || isOwner()
+inline fun MemberPermission.isOperator(): Boolean = isAdministrator() || isOwner()
 
 
 /**
  * 判断权限是否为群主
  */
-public inline fun Member.isOwner(): Boolean = this.permission.isOwner()
+inline fun Member.isOwner(): Boolean = this.permission.isOwner()
 
 /**
  * 判断权限是否为管理员
  */
-public inline fun Member.isAdministrator(): Boolean = this.permission.isAdministrator()
+inline fun Member.isAdministrator(): Boolean = this.permission.isAdministrator()
 
 /**
  * 判断权限是否为管理员或群主
  */
-public inline fun Member.isOperator(): Boolean = this.permission.isOperator()
+inline fun Member.isOperator(): Boolean = this.permission.isOperator()
 
 
 /**
  * 权限不足
  */
 @Suppress("unused")
-public class PermissionDeniedException : IllegalStateException {
-    public constructor() : super("Permission denied")
-    public constructor(message: String?) : super(message)
+class PermissionDeniedException : IllegalStateException {
+    constructor() : super("Permission denied")
+    constructor(message: String?) : super(message)
 }
 
 /**
@@ -98,7 +98,7 @@ public class PermissionDeniedException : IllegalStateException {
  *
  * @throws PermissionDeniedException
  */
-public inline fun Group.checkBotPermission(
+inline fun Group.checkBotPermission(
     required: MemberPermission,
     crossinline lazyMessage: () -> String = {
         "Permission denied: required $required, got actual $botPermission for $bot in group $id"
@@ -115,8 +115,8 @@ public inline fun Group.checkBotPermission(
  * @throws PermissionDeniedException
  */
 @Deprecated("use checkBotPermission", ReplaceWith("checkBotPermission(MemberPermission.ADMINISTRATOR)"))
-public inline fun Group.checkBotPermissionOperator(
+inline fun Group.checkBotPermissionOperator(
     crossinline lazyMessage: () -> String = {
         "Permission denied: required ${MemberPermission.ADMINISTRATOR} or ${MemberPermission.OWNER}, got actual $botPermission for $bot in group $id"
     }
-): Unit = checkBotPermission(MemberPermission.ADMINISTRATOR, lazyMessage)
+) = checkBotPermission(MemberPermission.ADMINISTRATOR, lazyMessage)

@@ -11,4 +11,4 @@ package net.mamoe.mirai.utils
 
 import java.lang.ref.WeakReference
 
-public actual typealias WeakRef<T> = WeakReference<T>
+actual typealias WeakRef<T> = WeakReference<T>

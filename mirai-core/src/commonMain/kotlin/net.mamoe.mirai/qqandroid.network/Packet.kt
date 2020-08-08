@@ -10,16 +10,14 @@ import net.mamoe.mirai.utils.MiraiInternalAPI
  * **InternalAPI**: 这是内部 API, 它随时都有可能被修改
  */
 @MiraiInternalAPI
-public interface Packet {
+interface Packet {
     /**
      * 实现这个接口的包将不会被记录到日志中
      */
-    @MiraiInternalAPI
-    public interface NoLog
+    interface NoLog
 
     /**
      * 实现这个接口的 [Event] 不会被作为事件记录到日志中
      */
-    @MiraiInternalAPI
-    public interface NoEventLog
+    interface NoEventLog
 }

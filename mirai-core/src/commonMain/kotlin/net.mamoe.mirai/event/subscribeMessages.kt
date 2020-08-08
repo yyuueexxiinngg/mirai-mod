@@ -29,7 +29,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
-public typealias MessagePacketSubscribersBuilder = MessageSubscribersBuilder<MessageEvent, Listener<MessageEvent>, Unit, Unit>
+typealias MessagePacketSubscribersBuilder = MessageSubscribersBuilder<MessageEvent, Listener<MessageEvent>, Unit, Unit>
 
 /**
  * 订阅来自所有 [Bot] 的所有联系人的消息事件. 联系人可以是任意群或任意好友或临时会话.
@@ -39,7 +39,7 @@ public typealias MessagePacketSubscribersBuilder = MessageSubscribersBuilder<Mes
  * @see CoroutineScope.incoming 打开一个指定事件的接收通道
  */
 
-public fun <R> CoroutineScope.subscribeMessages(
+fun <R> CoroutineScope.subscribeMessages(
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     concurrencyKind: Listener.ConcurrencyKind = Listener.ConcurrencyKind.CONCURRENT,
     priority: Listener.EventPriority = EventPriority.MONITOR,
@@ -63,7 +63,7 @@ public fun <R> CoroutineScope.subscribeMessages(
     }.run(listeners)
 }
 
-public typealias GroupMessageSubscribersBuilder = MessageSubscribersBuilder<GroupMessageEvent, Listener<GroupMessageEvent>, Unit, Unit>
+typealias GroupMessageSubscribersBuilder = MessageSubscribersBuilder<GroupMessageEvent, Listener<GroupMessageEvent>, Unit, Unit>
 
 /**
  * 订阅来自所有 [Bot] 的所有群消息事件
@@ -72,7 +72,7 @@ public typealias GroupMessageSubscribersBuilder = MessageSubscribersBuilder<Grou
  *
  * @see CoroutineScope.incoming 打开一个指定事件的接收通道
  */
-public fun <R> CoroutineScope.subscribeGroupMessages(
+fun <R> CoroutineScope.subscribeGroupMessages(
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     concurrencyKind: Listener.ConcurrencyKind = Listener.ConcurrencyKind.CONCURRENT,
     priority: Listener.EventPriority = EventPriority.MONITOR,
@@ -90,7 +90,7 @@ public fun <R> CoroutineScope.subscribeGroupMessages(
     }.run(listeners)
 }
 
-public typealias FriendMessageSubscribersBuilder = MessageSubscribersBuilder<FriendMessageEvent, Listener<FriendMessageEvent>, Unit, Unit>
+typealias FriendMessageSubscribersBuilder = MessageSubscribersBuilder<FriendMessageEvent, Listener<FriendMessageEvent>, Unit, Unit>
 
 /**
  * 订阅来自所有 [Bot] 的所有好友消息事件
@@ -99,7 +99,7 @@ public typealias FriendMessageSubscribersBuilder = MessageSubscribersBuilder<Fri
  *
  * @see CoroutineScope.incoming 打开一个指定事件的接收通道
  */
-public fun <R> CoroutineScope.subscribeFriendMessages(
+fun <R> CoroutineScope.subscribeFriendMessages(
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     concurrencyKind: Listener.ConcurrencyKind = Listener.ConcurrencyKind.CONCURRENT,
     priority: Listener.EventPriority = EventPriority.MONITOR,
@@ -117,7 +117,7 @@ public fun <R> CoroutineScope.subscribeFriendMessages(
     }.run(listeners)
 }
 
-public typealias TempMessageSubscribersBuilder = MessageSubscribersBuilder<TempMessageEvent, Listener<TempMessageEvent>, Unit, Unit>
+typealias TempMessageSubscribersBuilder = MessageSubscribersBuilder<TempMessageEvent, Listener<TempMessageEvent>, Unit, Unit>
 
 /**
  * 订阅来自所有 [Bot] 的所有临时会话消息事件
@@ -126,7 +126,7 @@ public typealias TempMessageSubscribersBuilder = MessageSubscribersBuilder<TempM
  *
  * @see CoroutineScope.incoming 打开一个指定事件的接收通道
  */
-public fun <R> CoroutineScope.subscribeTempMessages(
+fun <R> CoroutineScope.subscribeTempMessages(
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     concurrencyKind: Listener.ConcurrencyKind = Listener.ConcurrencyKind.CONCURRENT,
     priority: Listener.EventPriority = EventPriority.MONITOR,
@@ -159,7 +159,7 @@ public fun <R> CoroutineScope.subscribeTempMessages(
  * @see subscribeMessages
  * @see subscribeGroupMessages
  */
-public inline fun <reified E : Event> CoroutineScope.incoming(
+inline fun <reified E : Event> CoroutineScope.incoming(
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     concurrencyKind: Listener.ConcurrencyKind = Listener.ConcurrencyKind.CONCURRENT,
     priority: Listener.EventPriority = EventPriority.MONITOR,

@@ -33,12 +33,12 @@ import kotlin.jvm.JvmSynthetic
  * @see ExternalImage.sendTo 上传图片并以纯图片消息发送给联系人
  * @See ExternalImage.upload 上传图片并得到 [Image] 消息
  */
-public class ExternalImage internal constructor(
+class ExternalImage internal constructor(
     @JvmField
     internal val input: ReusableInput
 ) {
     internal val md5: ByteArray get() = this.input.md5
-    public val formatName: String by lazy {
+    val formatName: String by lazy {
         val hex = input.asInput().use {
             it.readBytes(8).toUHexString("")
         }
@@ -51,22 +51,22 @@ public class ExternalImage internal constructor(
         }
     }
 
-    public companion object {
-        public const val defaultFormatName: String = "mirai"
+    companion object {
+        const val defaultFormatName = "mirai"
 
 
         @MiraiExperimentalAPI
-        public fun generateUUID(md5: ByteArray): String {
+        fun generateUUID(md5: ByteArray): String {
             return "${md5[0, 3]}-${md5[4, 5]}-${md5[6, 7]}-${md5[8, 9]}-${md5[10, 15]}"
         }
 
         @MiraiExperimentalAPI
-        public fun generateImageId(md5: ByteArray): String {
+        fun generateImageId(md5: ByteArray): String {
             return """{${generateUUID(md5)}}.$defaultFormatName"""
         }
     }
 
-    public override fun toString(): String {
+    override fun toString(): String {
         if (input is DeferredReusableInput) {
             if (!input.initialized) {
                 return "ExternalImage(uninitialized)"
@@ -104,7 +104,7 @@ public class ExternalImage internal constructor(
  * @see Contact.sendMessage 最终调用, 发送消息.
  */
 @JvmSynthetic
-public suspend fun <C : Contact> ExternalImage.sendTo(contact: C): MessageReceipt<C> = when (contact) {
+suspend fun <C : Contact> ExternalImage.sendTo(contact: C): MessageReceipt<C> = when (contact) {
     is Group -> contact.uploadImage(this).sendTo(contact)
     is User -> contact.uploadImage(this).sendTo(contact)
     else -> error("unreachable")
@@ -119,7 +119,7 @@ public suspend fun <C : Contact> ExternalImage.sendTo(contact: C): MessageReceip
  * @see Contact.uploadImage 最终调用, 上传图片.
  */
 @JvmSynthetic
-public suspend fun ExternalImage.upload(contact: Contact): Image = when (contact) {
+suspend fun ExternalImage.upload(contact: Contact): Image = when (contact) {
     is Group -> contact.uploadImage(this)
     is User -> contact.uploadImage(this)
     else -> error("unreachable")
@@ -131,7 +131,7 @@ public suspend fun ExternalImage.upload(contact: Contact): Image = when (contact
  * @see Contact.sendMessage 最终调用, 发送消息.
  */
 @JvmSynthetic
-public suspend inline fun <C : Contact> C.sendImage(image: ExternalImage): MessageReceipt<C> = image.sendTo(this)
+suspend inline fun <C : Contact> C.sendImage(image: ExternalImage): MessageReceipt<C> = image.sendTo(this)
 
 
 @JvmSynthetic

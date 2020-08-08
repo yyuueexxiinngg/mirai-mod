@@ -7,9 +7,7 @@
  * https://github.com/mamoe/mirai/blob/master/LICENSE
  */
 
-@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-@file:JvmMultifileClass
-@file:JvmName("BotEventsKt")
+@file:Suppress("WRONG_MODIFIER_CONTAINING_DECLARATION", "INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 
 package net.mamoe.mirai.event.events
 
@@ -26,26 +24,26 @@ import kotlin.jvm.JvmSynthetic
 /**
  * 有关一个 [Bot] 的事件
  */
-public interface BotEvent : Event {
-    public val bot: Bot
+interface BotEvent : Event {
+    val bot: Bot
 }
 
 /**
  * [Bot] 被动接收的事件. 这些事件可能与机器人有关
  */
-public interface BotPassiveEvent : BotEvent
+interface BotPassiveEvent : BotEvent
 
 /**
  * 由 [Bot] 主动发起的动作的事件
  */
-public interface BotActiveEvent : BotEvent
+interface BotActiveEvent : BotEvent
 
 
 /**
  * 有关群的事件
  */
-public interface GroupEvent : BotEvent {
-    public val group: Group
+interface GroupEvent : BotEvent {
+    val group: Group
     override val bot: Bot
         get() = group.bot
 }
@@ -53,8 +51,8 @@ public interface GroupEvent : BotEvent {
 /**
  * 有关群成员的事件
  */
-public interface GroupMemberEvent : GroupEvent {
-    public val member: Member
+interface GroupMemberEvent : GroupEvent {
+    val member: Member
     override val group: Group
         get() = member.group
 }
@@ -64,34 +62,34 @@ public interface GroupMemberEvent : GroupEvent {
  * @see isByBot
  * @see operatorOrBot
  */
-public interface GroupOperableEvent : GroupEvent {
+interface GroupOperableEvent : GroupEvent {
     /**
      * 操作人, 为 `null` 时为 [Bot] 操作
      */
-    public val operator: Member?
+    val operator: Member?
 }
 
 /**
  * 是否由 [Bot] 操作
  */
 @HidesMembers
-@get:JvmSynthetic
-public inline val GroupOperableEvent.isByBot: Boolean
+@get:JvmSynthetic // inline: planning to change to another file (1.2.0)
+inline val GroupOperableEvent.isByBot: Boolean
     get() = operator == null
 
 /**
  * 当操作人为 [Member] 时获取这个 [Member],
  * 当操作人为 [Bot] 时获取 [Group.botAsMember]
  */
-@get:JvmSynthetic
-public inline val GroupOperableEvent.operatorOrBot: Member
+@get:JvmSynthetic // inline: planning to change to another file (1.2.0)
+inline val GroupOperableEvent.operatorOrBot: Member
     get() = this.operator ?: this.group.botAsMember
 
 
 /**
  * 有关好友的事件
  */
-public interface FriendEvent : BotEvent {
-    public val friend: Friend
-    public override val bot: Bot get() = friend.bot
+interface FriendEvent : BotEvent {
+    val friend: Friend
+    final override val bot: Bot get() = friend.bot
 }

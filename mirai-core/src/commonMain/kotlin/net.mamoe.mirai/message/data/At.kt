@@ -32,30 +32,30 @@ import kotlin.jvm.JvmSynthetic
  *
  * @see AtAll 全体成员
  */
-public data class At
+data class At
 @Suppress("DataClassPrivateConstructor")
 private constructor(
-    public val target: Long,
+    val target: Long,
     /**
      * "@群员名片"
      */
-    public val display: String
+    val display: String
 ) : MessageContent, CodableMessage {
 
     /**
      * 构造一个 [At] 实例. 这是唯一的公开的构造方式.
      */
-    public constructor(member: Member) : this(member.id, "@${member.nameCardOrNick}")
+    constructor(member: Member) : this(member.id, "@${member.nameCardOrNick}")
 
-    public override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
         return other is At && other.target == this.target && other.display == this.display
     }
 
-    public override fun toString(): String = "[mirai:at:$target,$display]"
-    public override fun contentToString(): String = this.display
+    override fun toString(): String = "[mirai:at:$target,$display]"
+    override fun contentToString(): String = this.display
 
-    public companion object Key : Message.Key<At> {
-        public override val typeName: String
+    companion object Key : Message.Key<At> {
+        override val typeName: String
             get() = "At"
 
         /**
@@ -64,18 +64,18 @@ private constructor(
         @Suppress("FunctionName")
         @JvmStatic
         @LowLevelAPI
-        public fun _lowLevelConstructAtInstance(target: Long, display: String): At = At(target, display)
+        fun _lowLevelConstructAtInstance(target: Long, display: String): At = At(target, display)
     }
 
     // 自动为消息补充 " "
-    public override fun followedBy(tail: Message): MessageChain {
+    override fun followedBy(tail: Message): MessageChain {
         if (tail is PlainText && tail.content.startsWith(' ')) {
             return super<MessageContent>.followedBy(tail)
         }
         return super<MessageContent>.followedBy(PlainText(" ")) + tail
     }
 
-    public override fun hashCode(): Int {
+    override fun hashCode(): Int {
         var result = target.hashCode()
         result = 31 * result + display.hashCode()
         return result
@@ -88,4 +88,4 @@ private constructor(
  */
 @JvmSynthetic
 @Suppress("NOTHING_TO_INLINE")
-public inline fun Member.at(): At = At(this)
+inline fun Member.at(): At = At(this)

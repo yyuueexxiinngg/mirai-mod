@@ -40,12 +40,12 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.SOURCE)
 @OptIn(ExperimentalMultiplatform::class)
 @OptionalExpectation
-internal expect annotation class Throws(vararg val exceptionClasses: KClass<out Throwable>)
+expect annotation class Throws(vararg val exceptionClasses: KClass<out Throwable>)
 
 /**
  * 验证码, 设备锁解决器
  */
-public expect abstract class LoginSolver {
+expect abstract class LoginSolver {
     /**
      * 处理图片验证码.
      * 返回 null 以表示无法处理验证码, 将会刷新验证码或重试登录.
@@ -53,7 +53,7 @@ public expect abstract class LoginSolver {
      *
      * @throws LoginFailedException
      */
-    public abstract suspend fun onSolvePicCaptcha(bot: Bot, data: ByteArray): String?
+    abstract suspend fun onSolvePicCaptcha(bot: Bot, data: ByteArray): String?
 
     /**
      * 处理滑动验证码.
@@ -63,7 +63,7 @@ public expect abstract class LoginSolver {
      * @throws LoginFailedException
      * @return 验证码解决成功后获得的 ticket.
      */
-    public abstract suspend fun onSolveSliderCaptcha(bot: Bot, url: String): String?
+    abstract suspend fun onSolveSliderCaptcha(bot: Bot, url: String): String?
 
     /**
      * 处理不安全设备验证.
@@ -73,9 +73,9 @@ public expect abstract class LoginSolver {
      * @return 任意内容. 返回值保留以供未来更新.
      * @throws LoginFailedException
      */
-    public abstract suspend fun onSolveUnsafeDeviceLoginVerify(bot: Bot, url: String): String?
+    abstract suspend fun onSolveUnsafeDeviceLoginVerify(bot: Bot, url: String): String?
 
-    public companion object {
-        public val Default: LoginSolver
+    companion object {
+        val Default: LoginSolver
     }
 }

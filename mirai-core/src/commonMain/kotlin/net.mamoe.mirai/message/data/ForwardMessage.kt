@@ -83,12 +83,12 @@ import kotlin.jvm.Transient
  *
  * @see buildForwardMessage
  */
-public class ForwardMessage @JvmOverloads constructor(
+class ForwardMessage @JvmOverloads constructor(
     /**
      * 消息列表
      */
-    public val nodeList: Collection<INode>,
-    @Transient public val displayStrategy: DisplayStrategy = DisplayStrategy.Default
+    val nodeList: Collection<INode>,
+    @Transient val displayStrategy: DisplayStrategy = DisplayStrategy.Default
 ) : MessageContent {
     init {
         require(nodeList.isNotEmpty()) {
@@ -99,37 +99,37 @@ public class ForwardMessage @JvmOverloads constructor(
     /**
      * @see ForwardMessage
      */
-    public abstract class DisplayStrategy {
+    abstract class DisplayStrategy {
         /**
          * 修改后卡片标题会变为 "转发的聊天记录", 而此函数的返回值会显示在 preview 前
          */
-        public open fun generateTitle(forward: ForwardMessage): String = "群聊的聊天记录"
+        open fun generateTitle(forward: ForwardMessage): String = "群聊的聊天记录"
 
         /**
          * 显示在消息列表中的预览.
          */
-        public open fun generateBrief(forward: ForwardMessage): String = "[聊天记录]"
+        open fun generateBrief(forward: ForwardMessage): String = "[聊天记录]"
 
         /**
          * 目前未发现在哪能显示
          */
-        public open fun generateSource(forward: ForwardMessage): String = "聊天记录"
+        open fun generateSource(forward: ForwardMessage): String = "聊天记录"
 
         /**
          * 显示在卡片 body 中, 只会显示 sequence 前四个元素.
          * Java 用户: 使用 [sequenceOf] (`SequenceKt.sequenceOf`) 或 [asSequence] (`SequenceKt.asSequence`)
          */
-        public open fun generatePreview(forward: ForwardMessage): Sequence<String> =
+        open fun generatePreview(forward: ForwardMessage): Sequence<String> =
             forward.nodeList.asSequence().map { it.senderName + ": " + it.message.contentToString() }
 
         /**
          * 显示在卡片底部
          */
-        public open fun generateSummary(forward: ForwardMessage): String = "查看 ${forward.nodeList.size} 条转发消息"
+        open fun generateSummary(forward: ForwardMessage): String = "查看 ${forward.nodeList.size} 条转发消息"
 
-        public companion object Default : DisplayStrategy() {
+        companion object Default : DisplayStrategy() {
             @JvmSynthetic
-            public inline operator fun invoke(
+            inline operator fun invoke(
                 crossinline generateTitle: (forward: ForwardMessage) -> String = Default::generateTitle,
                 crossinline generateBrief: (forward: ForwardMessage) -> String = Default::generateBrief,
                 crossinline generateSource: (forward: ForwardMessage) -> String = Default::generateSource,
@@ -146,44 +146,44 @@ public class ForwardMessage @JvmOverloads constructor(
     }
 
 
-    public data class Node(
+    data class Node(
         override val senderId: Long,
         override val time: Int,
         override val senderName: String,
         override val message: Message
     ) : INode
 
-    public interface INode {
+    interface INode {
         /**
          * 发送人 [User.id]
          */
-        public val senderId: Long
+        val senderId: Long
 
         /**
          * 时间戳秒
          */
-        public val time: Int
+        val time: Int
 
         /**
          * 发送人名称
          */
-        public val senderName: String
+        val senderName: String
 
         /**
          * 消息内容
          */
-        public val message: Message
+        val message: Message
     }
 
-    public companion object Key : Message.Key<ForwardMessage> {
-        public override val typeName: String get() = "ForwardMessage"
+    companion object Key : Message.Key<ForwardMessage> {
+        override val typeName: String get() = "ForwardMessage"
     }
 
-    public override fun toString(): String = "[mirai:forward:$nodeList]"
+    override fun toString(): String = "[mirai:forward:$nodeList]"
     private val contentToString: String by lazy { nodeList.joinToString("\n") }
 
     @MiraiExperimentalAPI
-    public override fun contentToString(): String = contentToString
+    override fun contentToString(): String = contentToString
 }
 
 
@@ -191,7 +191,7 @@ public class ForwardMessage @JvmOverloads constructor(
  * 转换为 [ForwardMessage]
  */
 @JvmOverloads
-public fun Iterable<MessageEvent>.toForwardMessage(displayStrategy: DisplayStrategy = DisplayStrategy): ForwardMessage {
+fun Iterable<MessageEvent>.toForwardMessage(displayStrategy: DisplayStrategy = DisplayStrategy): ForwardMessage {
     val iterator = this.iterator()
     if (!iterator.hasNext()) return ForwardMessage(emptyList(), displayStrategy)
     return ForwardMessage(
@@ -203,7 +203,7 @@ public fun Iterable<MessageEvent>.toForwardMessage(displayStrategy: DisplayStrat
  * 转换为 [ForwardMessage]
  */
 @JvmOverloads
-public fun Message.toForwardMessage(
+fun Message.toForwardMessage(
     sender: User,
     time: Int = currentTimeSeconds.toInt(),
     displayStrategy: DisplayStrategy = DisplayStrategy
@@ -213,7 +213,7 @@ public fun Message.toForwardMessage(
  * 转换为 [ForwardMessage]
  */
 @JvmOverloads
-public fun Message.toForwardMessage(
+fun Message.toForwardMessage(
     senderId: Long,
     senderName: String,
     time: Int = currentTimeSeconds.toInt(),
@@ -227,7 +227,7 @@ public fun Message.toForwardMessage(
  * @see ForwardMessage 查看转发消息说明
  */
 @JvmSynthetic
-public inline fun buildForwardMessage(
+inline fun buildForwardMessage(
     context: Contact,
     displayStrategy: DisplayStrategy = DisplayStrategy,
     block: ForwardMessageBuilder.() -> Unit
@@ -240,7 +240,7 @@ public inline fun buildForwardMessage(
  * @see ForwardMessage 查看转发消息说明
  */
 @JvmSynthetic
-public inline fun MessageEvent.buildForwardMessage(
+inline fun MessageEvent.buildForwardMessage(
     context: Contact = this.subject,
     displayStrategy: DisplayStrategy = DisplayStrategy,
     block: ForwardMessageBuilder.() -> Unit
@@ -253,7 +253,7 @@ public inline fun MessageEvent.buildForwardMessage(
  */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.TYPE)
 @DslMarker
-public annotation class ForwardMessageDsl
+annotation class ForwardMessageDsl
 
 /**
  * 转发消息 DSL 构建器.
@@ -315,115 +315,114 @@ public annotation class ForwardMessageDsl
  *
  * `S named "name1" named "name2" says M` 最终的发送人名称为 `"name2"`
  */
-public class ForwardMessageBuilder private constructor(
+class ForwardMessageBuilder private constructor(
     /**
      * 消息语境. 可为 [Group] 或 [User]
      */
-    public val context: Contact,
+    val context: Contact,
     private val container: MutableList<ForwardMessage.INode>
 ) : MutableList<ForwardMessage.INode> by container {
     /**
      * @see ForwardMessage.displayStrategy
      */
-    public var displayStrategy: DisplayStrategy = DisplayStrategy
+    var displayStrategy: DisplayStrategy = DisplayStrategy
 
     private var built: Boolean = false
     private fun checkBuilt() {
         check(!built) { "ForwardMessageBuilder is already built therefore can't be modified" }
     }
 
-    public constructor(context: Contact) : this(context, mutableListOf())
-    public constructor(context: Contact, initialSize: Int) : this(context, ArrayList<ForwardMessage.INode>(initialSize))
+    constructor(context: Contact) : this(context, mutableListOf())
+    constructor(context: Contact, initialSize: Int) : this(context, ArrayList<ForwardMessage.INode>(initialSize))
 
     /**
      * 当前时间.
      * 在使用 [says] 时若不指定时间, 则会使用 [currentTime] 自增 1 的时间.
      */
-    public var currentTime: Int = currentTimeSeconds.toInt()
+    var currentTime: Int = currentTimeSeconds.toInt()
 
-    public inner class BuilderNode : ForwardMessage.INode {
+    inner class BuilderNode : ForwardMessage.INode {
 
         /**
          * 发送人 [User.id]
          */
-        public override var senderId: Long = 0
+        override var senderId: Long = 0
 
         /**
          * 时间戳秒
          */
-        public override var time: Int = currentTime++
+        override var time: Int = currentTime++
 
         /**
          * 发送人名称
          */
-        public override var senderName: String = ""
+        override var senderName: String = ""
 
         /**
          * 消息内容
          */
-        public override lateinit var message: Message
+        override lateinit var message: Message
 
 
         /**
          * 指定发送人 id 和名称.
          */
         @ForwardMessageDsl
-        public infix fun sender(user: User): BuilderNode =
-            apply { this.senderId(user.id); this.named(user.nameCardOrNick) }
+        infix fun sender(user: User): BuilderNode = apply { this.senderId(user.id); this.named(user.nameCardOrNick) }
 
         /**
          * 指定发送人 id.
          */
         @ForwardMessageDsl
-        public infix fun senderId(id: Int): BuilderNode = apply { this.senderId = id.toLongUnsigned() }
+        infix fun senderId(id: Int): BuilderNode = apply { this.senderId = id.toLongUnsigned() }
 
         /**
          * 指定发送人 id.
          */
         @ForwardMessageDsl
-        public infix fun senderId(id: Long): BuilderNode = apply { this.senderId = id }
+        infix fun senderId(id: Long): BuilderNode = apply { this.senderId = id }
 
         /**
          * 指定发送人名称.
          */
         @ForwardMessageDsl
-        public infix fun named(name: String): BuilderNode = apply { this.senderName = name }
+        infix fun named(name: String): BuilderNode = apply { this.senderName = name }
 
         /**
          * 指定发送人名称.
          */
         @ForwardMessageDsl
-        public infix fun senderName(name: String): BuilderNode = apply { this.senderName = name }
+        infix fun senderName(name: String): BuilderNode = apply { this.senderName = name }
 
         /**
          * 指定时间.
          * @time 时间戳, 单位为秒
          */
         @ForwardMessageDsl
-        public infix fun at(time: Int): BuilderNode = this.apply { this.time = time }
+        infix fun at(time: Int): BuilderNode = this.apply { this.time = time }
 
         /**
          * 指定时间.
          * @time 时间戳, 单位为秒
          */
         @ForwardMessageDsl
-        public infix fun time(time: Int): BuilderNode = this.apply { this.time = time }
+        infix fun time(time: Int): BuilderNode = this.apply { this.time = time }
 
         /**
          * 指定消息内容
          */
         @ForwardMessageDsl
-        public infix fun message(message: Message): BuilderNode = this.apply { this.message = message }
+        infix fun message(message: Message): BuilderNode = this.apply { this.message = message }
 
         /**
          * 指定消息内容
          */
         @ForwardMessageDsl
-        public infix fun message(message: String): BuilderNode = this.apply { this.message = message.toMessage() }
+        infix fun message(message: String): BuilderNode = this.apply { this.message = message.toMessage() }
 
         /** 添加一条消息  */
         @ForwardMessageDsl
-        public infix fun says(message: Message): ForwardMessageBuilder = this@ForwardMessageBuilder.apply {
+        infix fun says(message: Message): ForwardMessageBuilder = this@ForwardMessageBuilder.apply {
             checkBuilt()
             this@BuilderNode.message = message
             add(this@BuilderNode)
@@ -431,11 +430,11 @@ public class ForwardMessageBuilder private constructor(
 
         /** 添加一条消息  */
         @ForwardMessageDsl
-        public infix fun says(message: String): ForwardMessageBuilder = this.says(message.toMessage())
+        infix fun says(message: String): ForwardMessageBuilder = this.says(message.toMessage())
 
         /** 构造并添加一个 [MessageChain] */
         @ForwardMessageDsl
-        public inline infix fun says(chain: @ForwardMessageDsl MessageChainBuilder.() -> Unit): ForwardMessageBuilder =
+        inline infix fun says(chain: @ForwardMessageDsl MessageChainBuilder.() -> Unit): ForwardMessageBuilder =
             says(MessageChainBuilder().apply(chain).asMessageChain())
     }
 
@@ -443,16 +442,16 @@ public class ForwardMessageBuilder private constructor(
 
     /** 添加一条消息, 自动按顺序调整时间  */
     @ForwardMessageDsl
-    public infix fun Long.says(message: String): ForwardMessageBuilder = says(message.toMessage())
+    infix fun Long.says(message: String): ForwardMessageBuilder = says(message.toMessage())
 
     /** 添加一条消息, 自动按顺序调整时间  */
     @ForwardMessageDsl
-    public infix fun Int.says(message: String): ForwardMessageBuilder =
+    infix fun Int.says(message: String): ForwardMessageBuilder =
         this.toLong().and(0xFFFF_FFFF).says(message.toMessage())
 
     /** 添加一条消息, 自动按顺序调整时间 */
     @ForwardMessageDsl
-    public infix fun Long.says(message: Message): ForwardMessageBuilder =
+    infix fun Long.says(message: Message): ForwardMessageBuilder =
         this@ForwardMessageBuilder.apply {
             checkBuilt()
             add(BuilderNode().apply {
@@ -463,43 +462,43 @@ public class ForwardMessageBuilder private constructor(
 
     /** 添加一条消息, 自动按顺序调整时间  */
     @ForwardMessageDsl
-    public infix fun Int.says(message: Message): ForwardMessageBuilder = this.toLong().and(0xFFFF_FFFF).says(message)
+    infix fun Int.says(message: Message): ForwardMessageBuilder = this.toLong().and(0xFFFF_FFFF).says(message)
 
     /** 构造并添加一个 [MessageChain], 自动按顺序调整时间 */
     @ForwardMessageDsl
-    public inline infix fun Long.says(chain: @ForwardMessageDsl MessageChainBuilder.() -> Unit): ForwardMessageBuilder =
+    inline infix fun Long.says(chain: @ForwardMessageDsl MessageChainBuilder.() -> Unit): ForwardMessageBuilder =
         says(MessageChainBuilder().apply(chain).asMessageChain())
 
     /** 添加一条消息, 自动按顺序调整时间  */
     @ForwardMessageDsl
-    public inline infix fun Int.says(chain: @ForwardMessageDsl MessageChainBuilder.() -> Unit): ForwardMessageBuilder =
+    inline infix fun Int.says(chain: @ForwardMessageDsl MessageChainBuilder.() -> Unit): ForwardMessageBuilder =
         this.toLong().and(0xFFFF_FFFF).says(chain)
 
 
     /** 添加一条消息, 自动按顺序调整时间 */
     @ForwardMessageDsl
-    public infix fun Bot.says(message: String): ForwardMessageBuilder = this.id named this.smartName() says message
+    infix fun Bot.says(message: String): ForwardMessageBuilder = this.id named this.smartName() says message
 
     /** 添加一条消息, 自动按顺序调整时间 */
     @ForwardMessageDsl
-    public infix fun User.says(message: String): ForwardMessageBuilder = this.id named this.nameCardOrNick says message
+    infix fun User.says(message: String): ForwardMessageBuilder = this.id named this.nameCardOrNick says message
 
     /** 添加一条消息, 自动按顺序调整时间 */
     @ForwardMessageDsl
-    public infix fun User.says(message: Message): ForwardMessageBuilder = this.id named this.nameCardOrNick says message
+    infix fun User.says(message: Message): ForwardMessageBuilder = this.id named this.nameCardOrNick says message
 
     /** 添加一条消息, 自动按顺序调整时间 */
     @ForwardMessageDsl
-    public infix fun Bot.says(message: Message): ForwardMessageBuilder = this.id named this.smartName() says message
+    infix fun Bot.says(message: Message): ForwardMessageBuilder = this.id named this.smartName() says message
 
     /** 构造并添加一个 [MessageChain], 自动按顺序调整时间 */
     @ForwardMessageDsl
-    public inline infix fun User.says(chain: @ForwardMessageDsl MessageChainBuilder.() -> Unit): ForwardMessageBuilder =
+    inline infix fun User.says(chain: @ForwardMessageDsl MessageChainBuilder.() -> Unit): ForwardMessageBuilder =
         this says (MessageChainBuilder().apply(chain).asMessageChain())
 
     /** 构造并添加一个 [MessageChain], 自动按顺序调整时间 */
     @ForwardMessageDsl
-    public inline infix fun Bot.says(chain: @ForwardMessageDsl MessageChainBuilder.() -> Unit): ForwardMessageBuilder =
+    inline infix fun Bot.says(chain: @ForwardMessageDsl MessageChainBuilder.() -> Unit): ForwardMessageBuilder =
         this says (MessageChainBuilder().apply(chain).asMessageChain())
 
     // endregion
@@ -512,21 +511,21 @@ public class ForwardMessageBuilder private constructor(
      * @time 时间戳, 单位为秒
      */
     @ForwardMessageDsl
-    public infix fun Int.at(time: Int): BuilderNode = this.toLongUnsigned() at time
+    infix fun Int.at(time: Int): BuilderNode = this.toLongUnsigned() at time
 
     /**
      * 为一条消息指定时间.
      * @time 时间戳, 单位为秒
      */
     @ForwardMessageDsl
-    public infix fun Long.at(time: Int): BuilderNode = BuilderNode().apply { senderId = this@at;this.time = time }
+    infix fun Long.at(time: Int): BuilderNode = BuilderNode().apply { senderId = this@at;this.time = time }
 
     /**
      * 为一条消息指定时间和发送人名称.
      * @time 时间戳, 单位为秒
      */
     @ForwardMessageDsl
-    public infix fun User.at(time: Int): BuilderNode = this.id named this.nameCardOrNick at time
+    infix fun User.at(time: Int): BuilderNode = this.id named this.nameCardOrNick at time
 
     // endregion
 
@@ -535,21 +534,21 @@ public class ForwardMessageBuilder private constructor(
 
     /** 为一条消息指定发送人名称. */
     @ForwardMessageDsl
-    public infix fun Int.named(name: String): BuilderNode = this.toLongUnsigned().named(name)
+    infix fun Int.named(name: String): BuilderNode = this.toLongUnsigned().named(name)
 
     /** 为一条消息指定发送人名称. */
     @ForwardMessageDsl
-    public infix fun Long.named(name: String): BuilderNode =
+    infix fun Long.named(name: String): BuilderNode =
         BuilderNode().apply { senderId = this@named;this.senderName = name }
 
     /** 为一条消息指定发送人名称. */
     @ForwardMessageDsl
-    public infix fun User.named(name: String): BuilderNode = this.id.named(name)
+    infix fun User.named(name: String): BuilderNode = this.id.named(name)
 
     // endregion
 
     /** 构造 [ForwardMessage] */
-    public fun build(): ForwardMessage = ForwardMessage(container.toList(), this.displayStrategy)
+    fun build(): ForwardMessage = ForwardMessage(container.toList(), this.displayStrategy)
     internal fun Bot.smartName(): String = when (val c = this@ForwardMessageBuilder.context) {
         is Group -> c.botAsMember.nameCardOrNick
         else -> nick

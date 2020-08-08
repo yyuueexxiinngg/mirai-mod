@@ -9,17 +9,15 @@ buildscript {
         mavenLocal()
         // maven(url = "https://mirrors.huaweicloud.com/repository/maven")
         maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
-        maven(url = "https://kotlin.bintray.com/kotlinx")
         jcenter()
         google()
-        mavenCentral()
     }
 
     dependencies {
         classpath("com.github.jengelman.gradle.plugins:shadow:5.2.0")
         classpath("com.android.tools.build:gradle:${Versions.Android.androidGradlePlugin}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Kotlin.compiler}")
-        classpath("org.jetbrains.kotlin:kotlin-serialization:${Versions.Kotlin.compiler}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Kotlin.stdlib}")
+        classpath("org.jetbrains.kotlin:kotlin-serialization:${Versions.Kotlin.stdlib}")
         classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:${Versions.Kotlin.atomicFU}")
         classpath("org.jetbrains.kotlinx:binary-compatibility-validator:${Versions.Kotlin.binaryValidator}")
     }
@@ -62,10 +60,8 @@ allprojects {
         mavenLocal()
         // maven(url = "https://mirrors.huaweicloud.com/repository/maven")
         maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
-        maven(url = "https://kotlin.bintray.com/kotlinx")
         jcenter()
         google()
-        mavenCentral()
     }
 }
 

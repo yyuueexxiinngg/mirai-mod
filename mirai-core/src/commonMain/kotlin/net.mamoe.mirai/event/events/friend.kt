@@ -28,54 +28,54 @@ import kotlin.jvm.*
 /**
  * 好友昵称改变事件. 目前仅支持解析 (来自 PC 端的修改).
  */
-public data class FriendRemarkChangeEvent internal constructor(
-    public override val friend: Friend,
-    public val newName: String
+data class FriendRemarkChangeEvent internal constructor(
+    override val friend: Friend,
+    val newName: String
 ) : FriendEvent, Packet, AbstractEvent()
 
 /**
  * 成功添加了一个新好友的事件
  */
-public data class FriendAddEvent internal constructor(
+data class FriendAddEvent internal constructor(
     /**
      * 新好友. 已经添加到 [Bot.friends]
      */
-    public override val friend: Friend
+    override val friend: Friend
 ) : FriendEvent, Packet, AbstractEvent()
 
 /**
  * 好友已被删除的事件.
  */
-public data class FriendDeleteEvent internal constructor(
-    public override val friend: Friend
+data class FriendDeleteEvent internal constructor(
+    override val friend: Friend
 ) : FriendEvent, Packet, AbstractEvent()
 
 /**
  * 一个账号请求添加机器人为好友的事件
  */
 @Suppress("DEPRECATION")
-public data class NewFriendRequestEvent internal constructor(
-    public override val bot: Bot,
+data class NewFriendRequestEvent internal constructor(
+    override val bot: Bot,
     /**
      * 事件唯一识别号
      */
-    public val eventId: Long,
+    val eventId: Long,
     /**
      * 申请好友消息
      */
-    public val message: String,
+    val message: String,
     /**
      * 请求人 [User.id]
      */
-    public val fromId: Long,
+    val fromId: Long,
     /**
      * 来自群 [Group.id], 其他途径时为 0
      */
-    public val fromGroupId: Long,
+    val fromGroupId: Long,
     /**
      * 群名片或好友昵称
      */
-    public val fromNick: String
+    val fromNick: String
 ) : BotEvent, Packet, AbstractEvent() {
     @JvmField
     internal val responded: MiraiAtomicBoolean = MiraiAtomicBoolean(false)
@@ -83,23 +83,23 @@ public data class NewFriendRequestEvent internal constructor(
     /**
      * @return 申请人来自的群. 当申请人来自其他途径申请时为 `null`
      */
-    public val fromGroup: Group? = if (fromGroupId == 0L) null else bot.getGroup(fromGroupId)
+    val fromGroup: Group? = if (fromGroupId == 0L) null else bot.getGroup(fromGroupId)
 
     @JvmSynthetic
-    public suspend fun accept(): Unit = bot.acceptNewFriendRequest(this)
+    suspend fun accept() = bot.acceptNewFriendRequest(this)
 
     @JvmSynthetic
-    public suspend fun reject(blackList: Boolean = false): Unit = bot.rejectNewFriendRequest(this, blackList)
+    suspend fun reject(blackList: Boolean = false) = bot.rejectNewFriendRequest(this, blackList)
 
 
     @JavaFriendlyAPI
     @JvmName("accept")
-    public fun __acceptBlockingForJava__(): Unit = runBlocking { accept() }
+    fun __acceptBlockingForJava__() = runBlocking { accept() }
 
     @JavaFriendlyAPI
     @JvmOverloads
     @JvmName("reject")
-    public fun __rejectBlockingForJava__(blackList: Boolean = false): Unit =
+    fun __rejectBlockingForJava__(blackList: Boolean = false) =
         runBlocking { reject(blackList) }
 }
 
@@ -107,7 +107,7 @@ public data class NewFriendRequestEvent internal constructor(
 /**
  * [Friend] 头像被修改. 在此事件广播前就已经修改完毕.
  */
-public data class FriendAvatarChangedEvent internal constructor(
-    public override val friend: Friend
+data class FriendAvatarChangedEvent internal constructor(
+    override val friend: Friend
 ) : FriendEvent, Packet, AbstractEvent()
 

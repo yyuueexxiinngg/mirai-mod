@@ -15,9 +15,9 @@ package net.mamoe.mirai.utils
  * Android: 获取手机信息, 与 QQ 官方相同.
  * JVM: 部分为常量, 部分为随机
  */
-public expect open class SystemDeviceInfo : DeviceInfo {
-    public constructor()
-    public constructor(context: Context)
+expect open class SystemDeviceInfo : DeviceInfo {
+    constructor()
+    constructor(context: Context)
 
-    public object Version : DeviceInfo.Version
+    object Version : DeviceInfo.Version
 }

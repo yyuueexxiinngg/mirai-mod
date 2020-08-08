@@ -23,12 +23,12 @@ import kotlin.jvm.JvmSynthetic
  *
  * 在 JVM, 请查看 `BotFactoryJvm`
  */
-public expect interface BotFactory {
+expect interface BotFactory {
     /**
      * 使用指定的 [配置][configuration] 构造 [Bot] 实例
      */
     @JvmName("newBot")
-    public fun Bot(
+    fun Bot(
         context: Context,
         qq: Long,
         password: String,
@@ -39,7 +39,7 @@ public expect interface BotFactory {
      * 使用指定的 [配置][configuration] 构造 [Bot] 实例
      */
     @JvmName("newBot")
-    public fun Bot(
+    fun Bot(
         context: Context,
         qq: Long,
         passwordMd5: ByteArray,
@@ -51,7 +51,7 @@ public expect interface BotFactory {
  * 使用指定的 [配置][configuration] 构造 [Bot] 实例
  */
 @JvmSynthetic
-public inline fun BotFactory.Bot(
+inline fun BotFactory.Bot(
     context: Context,
     qq: Long,
     password: String,
@@ -62,7 +62,7 @@ public inline fun BotFactory.Bot(
  * 使用指定的 [配置][configuration] 构造 [Bot] 实例
  */
 @JvmSynthetic
-public inline fun BotFactory.Bot(
+inline fun BotFactory.Bot(
     context: Context,
     qq: Long,
     password: ByteArray,

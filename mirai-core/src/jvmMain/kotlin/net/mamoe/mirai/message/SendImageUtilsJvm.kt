@@ -36,7 +36,7 @@ import java.net.URL
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend fun <C : Contact> BufferedImage.sendTo(contact: C): MessageReceipt<C> =
+suspend fun <C : Contact> BufferedImage.sendTo(contact: C): MessageReceipt<C> =
     toExternalImage().sendTo(contact)
 
 /**
@@ -44,7 +44,7 @@ public suspend fun <C : Contact> BufferedImage.sendTo(contact: C): MessageReceip
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend fun <C : Contact> URL.sendAsImageTo(contact: C): MessageReceipt<C> =
+suspend fun <C : Contact> URL.sendAsImageTo(contact: C): MessageReceipt<C> =
     toExternalImage().sendTo(contact)
 
 /**
@@ -52,7 +52,7 @@ public suspend fun <C : Contact> URL.sendAsImageTo(contact: C): MessageReceipt<C
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend fun <C : Contact> Input.sendAsImageTo(contact: C): MessageReceipt<C> =
+suspend fun <C : Contact> Input.sendAsImageTo(contact: C): MessageReceipt<C> =
     toExternalImage().sendTo(contact)
 
 /**
@@ -60,7 +60,7 @@ public suspend fun <C : Contact> Input.sendAsImageTo(contact: C): MessageReceipt
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend fun <C : Contact> InputStream.sendAsImageTo(contact: C): MessageReceipt<C> =
+suspend fun <C : Contact> InputStream.sendAsImageTo(contact: C): MessageReceipt<C> =
     toExternalImage().sendTo(contact)
 
 /**
@@ -68,7 +68,7 @@ public suspend fun <C : Contact> InputStream.sendAsImageTo(contact: C): MessageR
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend fun <C : Contact> File.sendAsImageTo(contact: C): MessageReceipt<C> {
+suspend fun <C : Contact> File.sendAsImageTo(contact: C): MessageReceipt<C> {
     require(this.exists() && this.canRead())
     return toExternalImage().sendTo(contact)
 }
@@ -83,7 +83,7 @@ public suspend fun <C : Contact> File.sendAsImageTo(contact: C): MessageReceipt<
  */
 @JvmSynthetic
 @Throws(OverFileSizeMaxException::class)
-public suspend fun BufferedImage.upload(contact: Contact): Image =
+suspend fun BufferedImage.upload(contact: Contact): Image =
     toExternalImage().upload(contact)
 
 /**
@@ -91,7 +91,7 @@ public suspend fun BufferedImage.upload(contact: Contact): Image =
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend fun URL.uploadAsImage(contact: Contact): Image =
+suspend fun URL.uploadAsImage(contact: Contact): Image =
     toExternalImage().upload(contact)
 
 /**
@@ -99,7 +99,7 @@ public suspend fun URL.uploadAsImage(contact: Contact): Image =
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend fun Input.uploadAsImage(contact: Contact): Image =
+suspend fun Input.uploadAsImage(contact: Contact): Image =
     toExternalImage().upload(contact)
 
 /**
@@ -107,7 +107,7 @@ public suspend fun Input.uploadAsImage(contact: Contact): Image =
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend fun InputStream.uploadAsImage(contact: Contact): Image =
+suspend fun InputStream.uploadAsImage(contact: Contact): Image =
     toExternalImage().upload(contact)
 
 /**
@@ -115,7 +115,7 @@ public suspend fun InputStream.uploadAsImage(contact: Contact): Image =
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend fun File.uploadAsImage(contact: Contact): Image {
+suspend fun File.uploadAsImage(contact: Contact): Image {
     require(this.isFile && this.exists() && this.canRead()) { "file ${this.path} is not readable" }
     return toExternalImage().upload(contact)
 }
@@ -129,7 +129,7 @@ public suspend fun File.uploadAsImage(contact: Contact): Image {
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend inline fun <C : Contact> C.sendImage(bufferedImage: BufferedImage): MessageReceipt<C> =
+suspend inline fun <C : Contact> C.sendImage(bufferedImage: BufferedImage): MessageReceipt<C> =
     bufferedImage.sendTo(this)
 
 /**
@@ -137,21 +137,21 @@ public suspend inline fun <C : Contact> C.sendImage(bufferedImage: BufferedImage
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend inline fun <C : Contact> C.sendImage(imageUrl: URL): MessageReceipt<C> = imageUrl.sendAsImageTo(this)
+suspend inline fun <C : Contact> C.sendImage(imageUrl: URL): MessageReceipt<C> = imageUrl.sendAsImageTo(this)
 
 /**
  * 在 [Dispatchers.IO] 中读取 [Input] 到临时文件并将其作为图片发送到指定联系人
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend inline fun <C : Contact> C.sendImage(imageInput: Input): MessageReceipt<C> = imageInput.sendAsImageTo(this)
+suspend inline fun <C : Contact> C.sendImage(imageInput: Input): MessageReceipt<C> = imageInput.sendAsImageTo(this)
 
 /**
  * 在 [Dispatchers.IO] 中读取 [InputStream] 到临时文件并将其作为图片发送到指定联系人
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend inline fun <C : Contact> C.sendImage(imageStream: InputStream): MessageReceipt<C> =
+suspend inline fun <C : Contact> C.sendImage(imageStream: InputStream): MessageReceipt<C> =
     imageStream.sendAsImageTo(this)
 
 /**
@@ -159,7 +159,7 @@ public suspend inline fun <C : Contact> C.sendImage(imageStream: InputStream): M
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend inline fun <C : Contact> C.sendImage(file: File): MessageReceipt<C> = file.sendAsImageTo(this)
+suspend inline fun <C : Contact> C.sendImage(file: File): MessageReceipt<C> = file.sendAsImageTo(this)
 
 // endregion
 
@@ -170,34 +170,34 @@ public suspend inline fun <C : Contact> C.sendImage(file: File): MessageReceipt<
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend inline fun Contact.uploadImage(bufferedImage: BufferedImage): Image = bufferedImage.upload(this)
+suspend inline fun Contact.uploadImage(bufferedImage: BufferedImage): Image = bufferedImage.upload(this)
 
 /**
  * 在 [Dispatchers.IO] 中下载 [URL] 到临时文件并将其作为图片上传, 但不发送
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend inline fun Contact.uploadImage(imageUrl: URL): Image = imageUrl.uploadAsImage(this)
+suspend inline fun Contact.uploadImage(imageUrl: URL): Image = imageUrl.uploadAsImage(this)
 
 /**
  * 在 [Dispatchers.IO] 中读取 [Input] 到临时文件并将其作为图片上传, 但不发送
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend inline fun Contact.uploadImage(imageInput: Input): Image = imageInput.uploadAsImage(this)
+suspend inline fun Contact.uploadImage(imageInput: Input): Image = imageInput.uploadAsImage(this)
 
 /**
  * 在 [Dispatchers.IO] 中读取 [InputStream] 到临时文件并将其作为图片上传, 但不发送
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend inline fun Contact.uploadImage(imageStream: InputStream): Image = imageStream.uploadAsImage(this)
+suspend inline fun Contact.uploadImage(imageStream: InputStream): Image = imageStream.uploadAsImage(this)
 
 /**
  * 在 [Dispatchers.IO] 中将文件作为图片上传, 但不发送
  * @throws OverFileSizeMaxException
  */
 @Throws(OverFileSizeMaxException::class)
-public suspend inline fun Contact.uploadImage(file: File): Image = file.uploadAsImage(this)
+suspend inline fun Contact.uploadImage(file: File): Image = file.uploadAsImage(this)
 
 // endregion

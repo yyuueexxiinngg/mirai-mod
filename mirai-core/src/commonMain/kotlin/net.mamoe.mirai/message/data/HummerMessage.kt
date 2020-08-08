@@ -17,6 +17,7 @@ import net.mamoe.mirai.message.code.CodableMessage
 import net.mamoe.mirai.message.data.PokeMessage.Types
 import net.mamoe.mirai.message.data.VipFace.Companion
 import net.mamoe.mirai.message.data.VipFace.Kind
+import net.mamoe.mirai.utils.PlannedRemoval
 import kotlin.jvm.*
 
 /**
@@ -25,9 +26,9 @@ import kotlin.jvm.*
  * @see PokeMessage 戳一戳
  * @see FlashImage 闪照
  */
-public sealed class HummerMessage : MessageContent {
-    public companion object Key : Message.Key<HummerMessage> {
-        public override val typeName: String
+sealed class HummerMessage : MessageContent {
+    companion object Key : Message.Key<HummerMessage> {
+        override val typeName: String
             get() = "HummerMessage"
     }
     // has service type etc.
@@ -45,90 +46,90 @@ public sealed class HummerMessage : MessageContent {
  *
  * @see Types 使用伴生对象中的常量
  */
-public data class PokeMessage internal constructor(
+data class PokeMessage internal constructor(
     /**
      * 仅 mirai, 显示的名称
      */
-    public val name: String,
+    val name: String,
 
-    public val type: Int,
-    public val id: Int
+    val type: Int,
+    val id: Int
 ) : HummerMessage(), CodableMessage {
     @Suppress("DEPRECATION_ERROR", "DEPRECATION", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-    public companion object Types : Message.Key<PokeMessage> {
-        public override val typeName: String
+    companion object Types : Message.Key<PokeMessage> {
+        override val typeName: String
             get() = "PokeMessage"
 
         /** 戳一戳 */
         @JvmField
-        public val Poke: PokeMessage = PokeMessage("戳一戳", 1, -1)
+        val Poke = PokeMessage("戳一戳", 1, -1)
 
         /** 比心 */
         @JvmField
-        public val ShowLove: PokeMessage = PokeMessage("比心", 2, -1)
+        val ShowLove = PokeMessage("比心", 2, -1)
 
         /** 点赞  */
         @JvmField
-        public val Like: PokeMessage = PokeMessage("点赞", 3, -1)
+        val Like = PokeMessage("点赞", 3, -1)
 
         /** 心碎 */
         @JvmField
-        public val Heartbroken: PokeMessage = PokeMessage("心碎", 4, -1)
+        val Heartbroken = PokeMessage("心碎", 4, -1)
 
         /** 666 */
         @JvmField
-        public val SixSixSix: PokeMessage = PokeMessage("666", 5, -1)
+        val SixSixSix = PokeMessage("666", 5, -1)
 
         /** 放大招 */
         @JvmField
-        public val FangDaZhao: PokeMessage = PokeMessage("放大招", 6, -1)
+        val FangDaZhao = PokeMessage("放大招", 6, -1)
 
         /** 宝贝球 (SVIP) */
         @JvmField
-        public val BaoBeiQiu: PokeMessage = PokeMessage("宝贝球", 126, 2011)
+        val BaoBeiQiu = PokeMessage("宝贝球", 126, 2011)
 
         /** 玫瑰花 (SVIP) */
         @JvmField
-        public val Rose: PokeMessage = PokeMessage("玫瑰花", 126, 2007)
+        val Rose = PokeMessage("玫瑰花", 126, 2007)
 
         /** 召唤术 (SVIP) */
         @JvmField
-        public val ZhaoHuanShu: PokeMessage = PokeMessage("召唤术", 126, 2006)
+        val ZhaoHuanShu = PokeMessage("召唤术", 126, 2006)
 
         /** 让你皮 (SVIP) */
         @JvmField
-        public val RangNiPi: PokeMessage = PokeMessage("让你皮", 126, 2009)
+        val RangNiPi = PokeMessage("让你皮", 126, 2009)
 
         /** 结印 (SVIP) */
         @JvmField
-        public val JieYin: PokeMessage = PokeMessage("结印", 126, 2005)
+        val JieYin = PokeMessage("结印", 126, 2005)
 
         /** 手雷 (SVIP) */
         @JvmField
-        public val ShouLei: PokeMessage = PokeMessage("手雷", 126, 2004)
+        val ShouLei = PokeMessage("手雷", 126, 2004)
 
         /** 勾引 */
         @JvmField
-        public val GouYin: PokeMessage = PokeMessage("勾引", 126, 2003)
+        val GouYin = PokeMessage("勾引", 126, 2003)
 
         /** 抓一下 (SVIP) */
         @JvmField
-        public val ZhuaYiXia: PokeMessage = PokeMessage("抓一下", 126, 2001)
+        val ZhuaYiXia = PokeMessage("抓一下", 126, 2001)
 
         /** 碎屏 (SVIP) */
         @JvmField
-        public val SuiPing: PokeMessage = PokeMessage("碎屏", 126, 2002)
+        val SuiPing = PokeMessage("碎屏", 126, 2002)
 
         /** 敲门 (SVIP) */
         @JvmField
-        public val QiaoMen: PokeMessage = PokeMessage("敲门", 126, 2002)
+        val QiaoMen = PokeMessage("敲门", 126, 2002)
 
 
         /**
          * 所有类型数组
          */
         @JvmStatic
-        public val values: Array<PokeMessage> = arrayOf(
+        val values: Array<PokeMessage> = arrayOf(
             Poke, ShowLove, Like, Heartbroken, SixSixSix,
             FangDaZhao, BaoBeiQiu, Rose, ZhaoHuanShu, RangNiPi,
             JieYin, ShouLei, GouYin, ZhuaYiXia, SuiPing
@@ -160,64 +161,64 @@ public data class PokeMessage internal constructor(
  *
  * @see Types 使用伴生对象中的常量
  */
-public data class VipFace internal constructor(
+data class VipFace internal constructor(
     /**
      * 使用 [Companion] 中常量.
      */
-    public val kind: Kind,
-    public val count: Int
+    val kind: Kind,
+    val count: Int
 ) : HummerMessage(), CodableMessage {
-    public data class Kind(
+    data class Kind(
         val id: Int,
         val name: String
     ) {
-        public override fun toString(): String {
+        override fun toString(): String {
             return "$id,$name"
         }
     }
 
     @Suppress("DEPRECATION_ERROR", "DEPRECATION", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-    public companion object : Message.Key<VipFace> {
+    companion object : Message.Key<VipFace> {
         override val typeName: String get() = "VipFace"
 
         @JvmStatic
-        public val LiuLian: Kind = 9 to "榴莲"
+        val LiuLian = 9 to "榴莲"
 
         @JvmStatic
-        public val PingDiGuo: Kind = 1 to "平底锅"
+        val PingDiGuo = 1 to "平底锅"
 
         @JvmStatic
-        public val ChaoPiao: Kind = 12 to "钞票"
+        val ChaoPiao = 12 to "钞票"
 
         @JvmStatic
-        public val LueLueLue: Kind = 10 to "略略略"
+        val LueLueLue = 10 to "略略略"
 
         @JvmStatic
-        public val ZhuTou: Kind = 4 to "猪头"
+        val ZhuTou = 4 to "猪头"
 
         @JvmStatic
-        public val BianBian: Kind = 6 to "便便"
+        val BianBian = 6 to "便便"
 
         @JvmStatic
-        public val ZhaDan: Kind = 5 to "炸弹"
+        val ZhaDan = 5 to "炸弹"
 
         @JvmStatic
-        public val AiXin: Kind = 2 to "爱心"
+        val AiXin = 2 to "爱心"
 
         @JvmStatic
-        public val HaHa: Kind = 3 to "哈哈"
+        val HaHa = 3 to "哈哈"
 
         @JvmStatic
-        public val DianZan: Kind = 1 to "点赞"
+        val DianZan = 1 to "点赞"
 
         @JvmStatic
-        public val QinQin: Kind = 7 to "亲亲"
+        val QinQin = 7 to "亲亲"
 
         @JvmStatic
-        public val YaoWan: Kind = 8 to "药丸"
+        val YaoWan = 8 to "药丸"
 
         @JvmStatic
-        public val values: Array<Kind> = arrayOf(
+        val values: Array<Kind> = arrayOf(
             LiuLian, PingDiGuo, ChaoPiao, LueLueLue, ZhuTou,
             BianBian, ZhaDan, AiXin, HaHa, DianZan, QinQin, YaoWan
         )
@@ -248,14 +249,14 @@ public data class VipFace internal constructor(
  *
  * @see Image 查看图片相关信息
  */
-public sealed class FlashImage : MessageContent, HummerMessage(), CodableMessage {
-    public companion object Key : Message.Key<FlashImage> {
+sealed class FlashImage : MessageContent, HummerMessage(), CodableMessage {
+    companion object Key : Message.Key<FlashImage> {
         /**
          * 将普通图片转换为闪照.
          */
         @JvmStatic
         @JvmName("from")
-        public operator fun invoke(image: Image): FlashImage {
+        operator fun invoke(image: Image): FlashImage {
 
             return when (image) {
                 is GroupImage -> GroupFlashImage(image)
@@ -271,18 +272,18 @@ public sealed class FlashImage : MessageContent, HummerMessage(), CodableMessage
          */
         @JvmStatic
         @JvmName("from")
-        public operator fun invoke(imageId: String): FlashImage {
+        operator fun invoke(imageId: String): FlashImage {
             return invoke(Image(imageId))
         }
 
-        public override val typeName: String
+        override val typeName: String
             get() = "FlashImage"
     }
 
     /**
      * 闪照的内容图片, 即一个普通图片.
      */
-    public abstract val image: Image
+    abstract val image: Image
 
     private var stringValue: String? = null
         get() {
@@ -292,24 +293,23 @@ public sealed class FlashImage : MessageContent, HummerMessage(), CodableMessage
             }
         }
 
-    public final override fun toString(): String = stringValue!!
-    public override fun contentToString(): String = "[闪照]"
+    final override fun toString(): String = stringValue!!
+    override fun contentToString(): String = "[闪照]"
 }
-
-public inline fun Image.flash(): FlashImage = FlashImage(this)
-
-@JvmSynthetic
-public inline fun GroupImage.flash(): GroupFlashImage = FlashImage(this) as GroupFlashImage
+inline fun Image.flash(): FlashImage = FlashImage(this)
 
 @JvmSynthetic
-public inline fun FriendImage.flash(): FriendFlashImage = FlashImage(this) as FriendFlashImage
+inline fun GroupImage.flash(): GroupFlashImage = FlashImage(this) as GroupFlashImage
+
+@JvmSynthetic
+inline fun FriendImage.flash(): FriendFlashImage = FlashImage(this) as FriendFlashImage
 
 /**
  * @see FlashImage.invoke
  */
-public data class GroupFlashImage(public override val image: GroupImage) : FlashImage() {
-    public companion object Key : Message.Key<GroupFlashImage> {
-        public override val typeName: String
+data class GroupFlashImage(override val image: GroupImage) : FlashImage() {
+    companion object Key : Message.Key<GroupFlashImage> {
+        override val typeName: String
             get() = "GroupFlashImage"
     }
 }
@@ -317,9 +317,9 @@ public data class GroupFlashImage(public override val image: GroupImage) : Flash
 /**
  * @see FlashImage.invoke
  */
-public data class FriendFlashImage(public override val image: FriendImage) : FlashImage() {
-    public companion object Key : Message.Key<FriendFlashImage> {
-        public override val typeName: String
+data class FriendFlashImage(override val image: FriendImage) : FlashImage() {
+    companion object Key : Message.Key<FriendFlashImage> {
+        override val typeName: String
             get() = "FriendFlashImage"
     }
 }

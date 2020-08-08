@@ -11,6 +11,6 @@ package net.mamoe.mirai.utils
 
 import kotlinx.io.pool.DefaultPool
 
-public actual abstract class Context
+actual abstract class Context
 
-public open class ContextImpl : Context()
+open class ContextImpl : Context()

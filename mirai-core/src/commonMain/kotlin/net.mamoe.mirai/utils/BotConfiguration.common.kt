@@ -37,12 +37,12 @@ import kotlin.jvm.JvmSynthetic
  * }
  * ```
  */
-public expect open class BotConfiguration() : BotConfigurationBase {
+expect open class BotConfiguration() : BotConfigurationBase {
     /**
      * 设备信息覆盖. 在没有手动指定时将会通过日志警告, 并使用随机设备信息.
      * @see randomDeviceInfo 使用随机设备信息
      */
-    public var deviceInfo: ((Context) -> DeviceInfo)?
+    var deviceInfo: ((Context) -> DeviceInfo)?
 
     /**
      * 使用随机设备信息.
@@ -50,7 +50,7 @@ public expect open class BotConfiguration() : BotConfigurationBase {
      * @see deviceInfo
      */
     @ConfigurationDsl
-    public fun randomDeviceInfo()
+    fun randomDeviceInfo()
 
     /**
      * 使用特定由 [DeviceInfoData] 序列化产生的 JSON 的设备信息
@@ -63,7 +63,7 @@ public expect open class BotConfiguration() : BotConfigurationBase {
     /**
      * 协议类型, 服务器仅允许使用不同协议同时登录.
      */
-    public enum class MiraiProtocol {
+    enum class MiraiProtocol {
         /**
          * Android 手机.
          */
@@ -84,17 +84,17 @@ public expect open class BotConfiguration() : BotConfigurationBase {
         internal val id: Long
     }
 
-    public companion object {
+    companion object {
         /** 默认的配置实例. 可以进行修改 */
         @JvmStatic
-        public val Default: BotConfiguration
+        val Default: BotConfiguration
     }
 
-    public fun copy(): BotConfiguration
+    fun copy(): BotConfiguration
 }
 
 @SinceMirai("1.1.0")
-public open class BotConfigurationBase internal constructor() {
+open class BotConfigurationBase internal constructor() {
     /**
      * 日志记录器
      *
@@ -105,7 +105,7 @@ public open class BotConfigurationBase internal constructor() {
      *
      * @see MiraiLogger
      */
-    public var botLoggerSupplier: ((Bot) -> MiraiLogger) = { DefaultLogger("Bot ${it.id}") }
+    var botLoggerSupplier: ((Bot) -> MiraiLogger) = { DefaultLogger("Bot ${it.id}") }
 
     /**
      * 网络层日志构造器
@@ -117,46 +117,46 @@ public open class BotConfigurationBase internal constructor() {
      *
      * @see MiraiLogger
      */
-    public var networkLoggerSupplier: ((Bot) -> MiraiLogger) = { DefaultLogger("Net ${it.id}") }
+    var networkLoggerSupplier: ((Bot) -> MiraiLogger) = { DefaultLogger("Net ${it.id}") }
 
     /** 父 [CoroutineContext]. [Bot] 创建后会使用 [SupervisorJob] 覆盖其 [Job], 但会将这个 [Job] 作为父 [Job] */
-    public var parentCoroutineContext: CoroutineContext = EmptyCoroutineContext
+    var parentCoroutineContext: CoroutineContext = EmptyCoroutineContext
 
     /** 心跳周期. 过长会导致被服务器断开连接. */
-    public var heartbeatPeriodMillis: Long = 60.secondsToMillis
+    var heartbeatPeriodMillis: Long = 60.secondsToMillis
 
     /**
      * 每次心跳时等待结果的时间.
      * 一旦心跳超时, 整个网络服务将会重启 (将消耗约 1s). 除正在进行的任务 (如图片上传) 会被中断外, 事件和插件均不受影响.
      */
-    public var heartbeatTimeoutMillis: Long = 5.secondsToMillis
+    var heartbeatTimeoutMillis: Long = 5.secondsToMillis
 
     /** 心跳失败后的第一次重连前的等待时间. */
-    public var firstReconnectDelayMillis: Long = 5.secondsToMillis
+    var firstReconnectDelayMillis: Long = 5.secondsToMillis
 
     /** 重连失败后, 继续尝试的每次等待时间 */
-    public var reconnectPeriodMillis: Long = 5.secondsToMillis
+    var reconnectPeriodMillis: Long = 5.secondsToMillis
 
     /** 最多尝试多少次重连 */
-    public var reconnectionRetryTimes: Int = Int.MAX_VALUE
+    var reconnectionRetryTimes: Int = Int.MAX_VALUE
 
     /** 验证码处理器 */
-    public var loginSolver: LoginSolver = LoginSolver.Default
+    var loginSolver: LoginSolver = LoginSolver.Default
 
     /** 使用协议类型 */
-    public var protocol: MiraiProtocol = MiraiProtocol.ANDROID_PAD
+    var protocol: MiraiProtocol = MiraiProtocol.ANDROID_PAD
 
     /** 缓存策略  */
     @SinceMirai("1.0.0")
     @MiraiExperimentalAPI
-    public var fileCacheStrategy: FileCacheStrategy = FileCacheStrategy.PlatformDefault
+    var fileCacheStrategy: FileCacheStrategy = FileCacheStrategy.PlatformDefault
 
     /**
      * Json 序列化器, 使用 'kotlinx.serialization'
      */
     @SinceMirai("1.1.0")
     @MiraiExperimentalAPI
-    public var json: Json = kotlin.runCatching {
+    var json: Json = kotlin.runCatching {
         @OptIn(UnstableDefault::class)
         Json(JsonConfiguration(isLenient = true, ignoreUnknownKeys = true))
     }.getOrElse { Json(JsonConfiguration.Stable) }
@@ -166,7 +166,7 @@ public open class BotConfigurationBase internal constructor() {
      * @see networkLoggerSupplier 更多日志处理方式
      */
     @ConfigurationDsl
-    public fun noNetworkLog() {
+    fun noNetworkLog() {
         networkLoggerSupplier = { _ -> SilentLogger }
     }
 
@@ -175,7 +175,7 @@ public open class BotConfigurationBase internal constructor() {
      * @see botLoggerSupplier 更多日志处理方式
      */
     @ConfigurationDsl
-    public fun noBotLog() {
+    fun noBotLog() {
         botLoggerSupplier = { _ -> SilentLogger }
     }
 
@@ -233,14 +233,14 @@ public open class BotConfigurationBase internal constructor() {
      */
     @JvmSynthetic
     @ConfigurationDsl
-    public suspend inline fun inheritCoroutineContext() {
+    suspend inline fun inheritCoroutineContext() {
         parentCoroutineContext = coroutineContext
     }
 
     /** 标注一个配置 DSL 函数 */
     @Target(AnnotationTarget.FUNCTION)
     @DslMarker
-    public annotation class ConfigurationDsl
+    annotation class ConfigurationDsl
 }
 
 internal val deviceInfoStub: (Context) -> DeviceInfo = {

@@ -13,14 +13,14 @@ import kotlin.contracts.contract
  * 图片上传时默认使用文件缓存.
  */
 @MiraiExperimentalAPI
-public expect interface FileCacheStrategy {
+expect interface FileCacheStrategy {
     /**
      * 将 [input] 缓存为 [ExternalImage].
      * 此函数应 close 这个 [Input]
      */
     @MiraiExperimentalAPI
     @Throws(IOException::class)
-    public fun newImageCache(input: Input): ExternalImage
+    fun newImageCache(input: Input): ExternalImage
 
     /**
      * 将 [input] 缓存为 [ExternalImage].
@@ -28,25 +28,25 @@ public expect interface FileCacheStrategy {
      */
     @MiraiExperimentalAPI
     @Throws(IOException::class)
-    public fun newImageCache(input: ByteArray): ExternalImage
+    fun newImageCache(input: ByteArray): ExternalImage
 
     /**
      * 默认的缓存方案. 在 JVM 平台使用系统临时文件.
      */
     @MiraiExperimentalAPI
-    public object PlatformDefault : FileCacheStrategy
+    object PlatformDefault : FileCacheStrategy
 
     /**
      * 使用内存直接存储所有图片文件.
      */
-    public object MemoryCache : FileCacheStrategy {
+    object MemoryCache : FileCacheStrategy {
         @MiraiExperimentalAPI
         @Throws(IOException::class)
-        public override fun newImageCache(input: Input): ExternalImage
+        override fun newImageCache(input: Input): ExternalImage
 
         @MiraiExperimentalAPI
         @Throws(IOException::class)
-        public override fun newImageCache(input: ByteArray): ExternalImage
+        override fun newImageCache(input: ByteArray): ExternalImage
     }
 }
 

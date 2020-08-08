@@ -17,6 +17,12 @@ import kotlinx.coroutines.*
 import net.mamoe.mirai.event.internal.registerEvent
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.reflect.KClass
+import kotlin.reflect.full.IllegalCallableAccessException
+import kotlin.reflect.full.callSuspend
+import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.kotlinFunction
 
 /**
  * 标注一个函数为事件监听器.
@@ -138,27 +144,27 @@ import kotlin.coroutines.EmptyCoroutineContext
  * Events.registerEvents(new MyEventHandlers())
  * ```
  *
- * //@sample net.mamoe.mirai.event.JvmMethodEventsTest
+ * @sample net.mamoe.mirai.event.JvmMethodEventsTest
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-public annotation class EventHandler(
+annotation class EventHandler(
     /**
      * 监听器优先级
      * @see Listener.EventPriority 查看优先级相关信息
      * @see Event.intercept 拦截事件
      */
-    public val priority: Listener.EventPriority = EventPriority.NORMAL,
+    val priority: Listener.EventPriority = EventPriority.NORMAL,
     /**
      * 是否自动忽略被 [取消][CancellableEvent.isCancelled]
      * @see CancellableEvent
      */
-    public val ignoreCancelled: Boolean = true,
+    val ignoreCancelled: Boolean = true,
     /**
      * 并发类型
      * @see Listener.ConcurrencyKind
      */
-    public val concurrency: Listener.ConcurrencyKind = Listener.ConcurrencyKind.CONCURRENT
+    val concurrency: Listener.ConcurrencyKind = Listener.ConcurrencyKind.CONCURRENT
 )
 
 /**
@@ -167,23 +173,23 @@ public annotation class EventHandler(
  * @see SimpleListenerHost 简单的实现
  * @see EventHandler 查看更多信息
  */
-public interface ListenerHost
+interface ListenerHost
 
 /**
  * 携带一个异常处理器的 [ListenerHost].
  * @see ListenerHost 查看更多信息
  * @see EventHandler 查看更多信息
  */
-public abstract class SimpleListenerHost
+abstract class SimpleListenerHost
 @JvmOverloads constructor(coroutineContext: CoroutineContext = EmptyCoroutineContext) : ListenerHost, CoroutineScope {
 
-    public final override val coroutineContext: CoroutineContext =
+    final override val coroutineContext: CoroutineContext =
         CoroutineExceptionHandler(::handleException) + coroutineContext + SupervisorJob(coroutineContext[Job])
 
     /**
      * 处理事件处理中未捕获的异常. 在构造器中的 [coroutineContext] 未提供 [CoroutineExceptionHandler] 情况下必须继承此函数.
      */
-    public open fun handleException(context: CoroutineContext, exception: Throwable) {
+    open fun handleException(context: CoroutineContext, exception: Throwable) {
         throw IllegalStateException(
             """
             未找到异常处理器. 请继承 SimpleListenerHost 中的 handleException 方法, 或在构造 SimpleListenerHost 时提供 CoroutineExceptionHandler
@@ -197,7 +203,7 @@ public abstract class SimpleListenerHost
     /**
      * 停止所有事件监听
      */
-    public fun cancelAll() {
+    fun cancelAll() {
         this.cancel()
     }
 }
@@ -210,7 +216,7 @@ public abstract class SimpleListenerHost
  * @see EventHandler 获取更多信息
  */
 @JvmOverloads
-public fun <T> T.registerEvents(coroutineContext: CoroutineContext = EmptyCoroutineContext): Unit
+fun <T> T.registerEvents(coroutineContext: CoroutineContext = EmptyCoroutineContext)
         where T : CoroutineScope, T : ListenerHost = this.registerEvents(this, coroutineContext)
 
 /**
@@ -221,13 +227,154 @@ public fun <T> T.registerEvents(coroutineContext: CoroutineContext = EmptyCorout
  * @see EventHandler 获取更多信息
  */
 @JvmOverloads
-public fun CoroutineScope.registerEvents(
-    host: ListenerHost,
-    coroutineContext: CoroutineContext = EmptyCoroutineContext
-) {
+fun CoroutineScope.registerEvents(host: ListenerHost, coroutineContext: CoroutineContext = EmptyCoroutineContext) {
     for (method in host.javaClass.declaredMethods) {
         method.getAnnotation(EventHandler::class.java)?.let {
             method.registerEvent(host, this, it, coroutineContext)
+        }
+    }
+}
+
+
+@Suppress("UNCHECKED_CAST")
+private fun Method.registerEvent(
+    owner: Any,
+    scope: CoroutineScope,
+    annotation: EventHandler,
+    coroutineContext: CoroutineContext
+): Listener<Event> {
+    this.isAccessible = true
+    val kotlinFunction = kotlin.runCatching { this.kotlinFunction }.getOrNull()
+    return if (kotlinFunction != null) {
+        // kotlin functions
+
+        val param = kotlinFunction.parameters
+        when (param.size) {
+            3 -> { // ownerClass, receiver, event
+                check(param[1].type == param[2].type) { "Illegal kotlin function ${kotlinFunction.name}. Receiver and param must have same type" }
+                check((param[1].type.classifier as? KClass<*>)?.isSubclassOf(Event::class) == true) {
+                    "Illegal kotlin function ${kotlinFunction.name}. First param or receiver must be subclass of Event, but found ${param[1].type.classifier}"
+                }
+            }
+            2 -> { // ownerClass, event
+                check((param[1].type.classifier as? KClass<*>)?.isSubclassOf(Event::class) == true) {
+                    "Illegal kotlin function ${kotlinFunction.name}. First param or receiver must be subclass of Event, but found ${param[1].type.classifier}"
+                }
+            }
+            else -> error("function ${kotlinFunction.name} must have one Event param")
+        }
+        lateinit var listener: Listener<*>
+        kotlin.runCatching {
+            kotlinFunction.isAccessible = true
+        }
+        suspend fun callFunction(event: Event): Any? {
+            try {
+                return when (param.size) {
+                    3 -> {
+                        if (kotlinFunction.isSuspend) {
+                            kotlinFunction.callSuspend(owner, event, event)
+                        } else withContext(Dispatchers.IO) { // for safety
+                            kotlinFunction.call(owner, event, event)
+                        }
+
+                    }
+                    2 -> {
+                        if (kotlinFunction.isSuspend) {
+                            kotlinFunction.callSuspend(owner, event)
+                        } else withContext(Dispatchers.IO) { // for safety
+                            kotlinFunction.call(owner, event)
+                        }
+                    }
+                    else -> error("stub")
+                }
+            } catch (e: IllegalCallableAccessException) {
+                listener.completeExceptionally(e)
+                return ListeningStatus.STOPPED
+            }
+        }
+        require(!kotlinFunction.returnType.isMarkedNullable) {
+            "Kotlin event handlers cannot have nullable return type."
+        }
+        require(kotlinFunction.parameters.any { it.type.isMarkedNullable }) {
+            "Kotlin event handlers cannot have nullable parameter type."
+        }
+        when (kotlinFunction.returnType.classifier) {
+            Unit::class, Nothing::class -> {
+                scope.subscribeAlways(
+                    param[1].type.classifier as KClass<out Event>,
+                    priority = annotation.priority,
+                    concurrency = annotation.concurrency,
+                    coroutineContext = coroutineContext
+                ) {
+                    if (annotation.ignoreCancelled) {
+                        if ((this as? CancellableEvent)?.isCancelled != true) {
+                            callFunction(this)
+                        }
+                    } else callFunction(this)
+                }.also { listener = it }
+            }
+            ListeningStatus::class -> {
+                scope.subscribe(
+                    param[1].type.classifier as KClass<out Event>,
+                    priority = annotation.priority,
+                    concurrency = annotation.concurrency,
+                    coroutineContext = coroutineContext
+                ) {
+                    if (annotation.ignoreCancelled) {
+                        if ((this as? CancellableEvent)?.isCancelled != true) {
+                            callFunction(this) as ListeningStatus
+                        } else ListeningStatus.LISTENING
+                    } else callFunction(this) as ListeningStatus
+                }.also { listener = it }
+            }
+            else -> error("Illegal method return type. Required Void, Nothing or ListeningStatus, found ${kotlinFunction.returnType.classifier}")
+        }
+    } else {
+        // java methods
+
+        val paramType = this.parameters[0].type
+        check(this.parameterCount == 1 && Event::class.java.isAssignableFrom(paramType)) {
+            "Illegal method parameter. Required one exact Event subclass. found $paramType"
+        }
+        when (this.returnType) {
+            Void::class.java, Void.TYPE, Nothing::class.java -> {
+                scope.subscribeAlways(
+                    paramType.kotlin as KClass<out Event>,
+                    priority = annotation.priority,
+                    concurrency = annotation.concurrency,
+                    coroutineContext = coroutineContext
+                ) {
+                    if (annotation.ignoreCancelled) {
+                        if ((this as? CancellableEvent)?.isCancelled != true) {
+                            withContext(Dispatchers.IO) {
+                                this@registerEvent.invoke(owner, this)
+                            }
+                        }
+                    } else withContext(Dispatchers.IO) {
+                        this@registerEvent.invoke(owner, this)
+                    }
+                }
+            }
+            ListeningStatus::class.java -> {
+                scope.subscribe(
+                    paramType.kotlin as KClass<out Event>,
+                    priority = annotation.priority,
+                    concurrency = annotation.concurrency,
+                    coroutineContext = coroutineContext
+                ) {
+                    if (annotation.ignoreCancelled) {
+                        if ((this as? CancellableEvent)?.isCancelled != true) {
+                            withContext(Dispatchers.IO) {
+                                this@registerEvent.invoke(owner, this) as ListeningStatus
+                            }
+                        } else ListeningStatus.LISTENING
+                    } else withContext(Dispatchers.IO) {
+                        this@registerEvent.invoke(owner, this) as ListeningStatus
+                    }
+
+                }
+            }
+            else -> error("Illegal method return type. Required Void or ListeningStatus, but found ${this.returnType.canonicalName}")
         }
     }
 }

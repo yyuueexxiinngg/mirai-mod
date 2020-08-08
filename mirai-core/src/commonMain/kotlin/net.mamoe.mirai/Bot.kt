@@ -9,7 +9,7 @@
 
 @file:Suppress(
     "EXPERIMENTAL_API_USAGE", "unused", "FunctionName", "NOTHING_TO_INLINE", "UnusedImport",
-    "EXPERIMENTAL_OVERRIDE", "CanBeParameter", "MemberVisibilityCanBePrivate"
+    "EXPERIMENTAL_OVERRIDE"
 )
 
 package net.mamoe.mirai
@@ -33,7 +33,7 @@ import kotlin.jvm.JvmSynthetic
  * 登录, 返回 [this]
  */
 @JvmSynthetic
-public suspend inline fun <B : Bot> B.alsoLogin(): B = also { login() }
+suspend inline fun <B : Bot> B.alsoLogin(): B = also { login() }
 
 /**
  * 机器人对象. 一个机器人实例登录一个 QQ 账号.
@@ -47,10 +47,10 @@ public suspend inline fun <B : Bot> B.alsoLogin(): B = also { login() }
  * @see BotFactory 构造 [Bot] 的工厂, [Bot] 唯一的构造方式.
  */
 @Suppress("INAPPLICABLE_JVM_NAME", "EXPOSED_SUPER_CLASS")
-public abstract class Bot internal constructor(
-    public val configuration: BotConfiguration
+abstract class Bot internal constructor(
+    val configuration: BotConfiguration
 ) : CoroutineScope, LowLevelBotAPIAccessor, BotJavaFriendlyAPI, ContactOrBot {
-    public final override val coroutineContext: CoroutineContext = // for id
+    final override val coroutineContext: CoroutineContext = // for id
         configuration.parentCoroutineContext
             .plus(SupervisorJob(configuration.parentCoroutineContext[Job]))
             .plus(configuration.parentCoroutineContext[CoroutineExceptionHandler]
@@ -61,22 +61,22 @@ public abstract class Bot internal constructor(
             .plus(CoroutineName("Mirai Bot"))
 
 
-    public companion object {
+    companion object {
         @JvmField
         @Suppress("ObjectPropertyName")
         internal val _instances: LockFreeLinkedList<WeakRef<Bot>> = LockFreeLinkedList()
 
-        @PlannedRemoval("2.0.0")
+        @PlannedRemoval("1.2.0")
         @Deprecated("for binary compatibility", level = DeprecationLevel.HIDDEN)
         @JvmStatic
-        public val instances: List<WeakRef<Bot>>
+        val instances: List<WeakRef<Bot>>
             get() = _instances.toList()
 
         /**
          * 复制一份此时的 [Bot] 实例列表.
          */
         @JvmStatic
-        public val botInstances: List<Bot>
+        val botInstances: List<Bot>
             get() = _instances.asSequence().mapNotNull { it.get() }.toList()
 
         /**
@@ -84,28 +84,28 @@ public abstract class Bot internal constructor(
          */
         @SinceMirai("1.1.0")
         @JvmStatic
-        public val botInstancesSequence: Sequence<Bot>
+        val botInstancesSequence: Sequence<Bot>
             get() = _instances.asSequence().mapNotNull { it.get() }
 
         /**
          * 遍历每一个 [Bot] 实例
          */
         @JvmSynthetic
-        public fun forEachInstance(block: (Bot) -> Unit): Unit = _instances.forEach { it.get()?.let(block) }
+        fun forEachInstance(block: (Bot) -> Unit) = _instances.forEach { it.get()?.let(block) }
 
         /**
          * 获取一个 [Bot] 实例, 无对应实例时抛出 [NoSuchElementException]
          */
         @JvmStatic
         @Throws(NoSuchElementException::class)
-        public fun getInstance(qq: Long): Bot =
+        fun getInstance(qq: Long): Bot =
             getInstanceOrNull(qq) ?: throw NoSuchElementException(qq.toString())
 
         /**
          * 获取一个 [Bot] 实例, 无对应实例时返回 `null`
          */
         @JvmStatic
-        public fun getInstanceOrNull(qq: Long): Bot? =
+        fun getInstanceOrNull(qq: Long): Bot? =
             _instances.asSequence().mapNotNull { it.get() }.firstOrNull { it.id == qq }
     }
 
@@ -123,28 +123,28 @@ public abstract class Bot internal constructor(
      * 在 Android 实现为 `android.content.Context`
      */
     @MiraiExperimentalAPI
-    public abstract val context: Context
+    abstract val context: Context
 
     /**
      * QQ 号码. 实际类型为 uint
      */
-    public abstract override val id: Long
+    abstract override val id: Long
 
     /**
      * 昵称
      */
-    public abstract val nick: String
+    abstract val nick: String
 
     /**
      * 日志记录器
      */
-    public abstract val logger: MiraiLogger
+    abstract val logger: MiraiLogger
 
     /**
      * 判断 Bot 是否在线 (可正常收发消息)
      */
     @SinceMirai("1.0.1")
-    public abstract val isOnline: Boolean
+    abstract val isOnline: Boolean
 
     // region contacts
 
@@ -152,32 +152,30 @@ public abstract class Bot internal constructor(
      * [User.id] 与 [Bot.id] 相同的 [_lowLevelNewFriend] 实例
      */
     @MiraiExperimentalAPI
-    public abstract val selfQQ: Friend
+    abstract val selfQQ: Friend
 
 
     /**
      * 机器人的好友列表. 与服务器同步更新
      */
-    public abstract val friends: ContactList<Friend>
+    abstract val friends: ContactList<Friend>
 
     /**
      * 获取一个好友对象.
      * @throws [NoSuchElementException] 当不存在这个好友时抛出
      */
-    public fun getFriend(id: Long): Friend =
-        friends.firstOrNull { it.id == id } ?: throw NoSuchElementException("friend $id")
+    fun getFriend(id: Long): Friend = friends.firstOrNull { it.id == id } ?: throw NoSuchElementException("friend $id")
 
     /**
      * 机器人加入的群列表. 与服务器同步更新
      */
-    public abstract val groups: ContactList<Group>
+    abstract val groups: ContactList<Group>
 
     /**
      * 获取一个机器人加入的群.
      * @throws NoSuchElementException 当不存在这个群时抛出
      */
-    public fun getGroup(id: Long): Group =
-        groups.firstOrNull { it.id == id } ?: throw NoSuchElementException("group $id")
+    fun getGroup(id: Long): Group = groups.firstOrNull { it.id == id } ?: throw NoSuchElementException("group $id")
 
     // endregion
 
@@ -193,7 +191,7 @@ public abstract class Bot internal constructor(
      * @see alsoLogin `.apply { login() }` 捷径
      */
     @JvmSynthetic
-    public abstract suspend fun login()
+    abstract suspend fun login()
     // endregion
 
 
@@ -214,7 +212,7 @@ public abstract class Bot internal constructor(
      * @see MessageSource.recall 撤回消息扩展
      */
     @JvmSynthetic
-    public abstract suspend fun recall(source: MessageSource)
+    abstract suspend fun recall(source: MessageSource)
 
     /**
      * 获取图片下载链接
@@ -228,7 +226,7 @@ public abstract class Bot internal constructor(
         level = DeprecationLevel.ERROR
     )
     @JvmSynthetic
-    public abstract suspend fun queryImageUrl(image: Image): String
+    abstract suspend fun queryImageUrl(image: Image): String
 
     /**
      * 构造一个 [OfflineMessageSource]
@@ -240,7 +238,7 @@ public abstract class Bot internal constructor(
      * @param targetUin 为用户时为 [Friend.id], 为群时需使用 [Group.calculateGroupUinByGroupCode] 计算
      */
     @MiraiExperimentalAPI("This is very experimental and is subject to change.")
-    public abstract fun constructMessageSource(
+    abstract fun constructMessageSource(
         kind: OfflineMessageSource.Kind,
         fromUin: Long, targetUin: Long,
         id: Int, time: Int, internalId: Int,
@@ -256,7 +254,7 @@ public abstract class Bot internal constructor(
     @PlannedRemoval("1.2.0")
     @Deprecated("use member function.", replaceWith = ReplaceWith("event.accept()"), level = DeprecationLevel.ERROR)
     @JvmSynthetic
-    public abstract suspend fun acceptNewFriendRequest(event: NewFriendRequestEvent)
+    abstract suspend fun acceptNewFriendRequest(event: NewFriendRequestEvent)
 
     /**
      * 拒绝好友验证
@@ -271,7 +269,7 @@ public abstract class Bot internal constructor(
         level = DeprecationLevel.ERROR
     )
     @JvmSynthetic
-    public abstract suspend fun rejectNewFriendRequest(event: NewFriendRequestEvent, blackList: Boolean = false)
+    abstract suspend fun rejectNewFriendRequest(event: NewFriendRequestEvent, blackList: Boolean = false)
 
     /**
      * 通过加群验证（需管理员权限）
@@ -281,7 +279,7 @@ public abstract class Bot internal constructor(
     @PlannedRemoval("1.2.0")
     @Deprecated("use member function.", replaceWith = ReplaceWith("event.accept()"), level = DeprecationLevel.ERROR)
     @JvmSynthetic
-    public abstract suspend fun acceptMemberJoinRequest(event: MemberJoinRequestEvent)
+    abstract suspend fun acceptMemberJoinRequest(event: MemberJoinRequestEvent)
 
     /**
      * 拒绝加群验证（需管理员权限）
@@ -295,14 +293,10 @@ public abstract class Bot internal constructor(
         replaceWith = ReplaceWith("event.reject(blackList)"),
         level = DeprecationLevel.HIDDEN
     )
-    public abstract suspend fun rejectMemberJoinRequest(event: MemberJoinRequestEvent, blackList: Boolean = false)
+    abstract suspend fun rejectMemberJoinRequest(event: MemberJoinRequestEvent, blackList: Boolean = false)
 
     @JvmSynthetic
-    public abstract suspend fun rejectMemberJoinRequest(
-        event: MemberJoinRequestEvent,
-        blackList: Boolean = false,
-        message: String = ""
-    )
+    abstract suspend fun rejectMemberJoinRequest(event: MemberJoinRequestEvent, blackList: Boolean = false, message: String = "")
 
     /**
      * 忽略加群验证（需管理员权限）
@@ -317,7 +311,7 @@ public abstract class Bot internal constructor(
         level = DeprecationLevel.ERROR
     )
     @JvmSynthetic
-    public abstract suspend fun ignoreMemberJoinRequest(event: MemberJoinRequestEvent, blackList: Boolean = false)
+    abstract suspend fun ignoreMemberJoinRequest(event: MemberJoinRequestEvent, blackList: Boolean = false)
 
     /**
      * 接收邀请入群（需管理员权限）
@@ -327,7 +321,7 @@ public abstract class Bot internal constructor(
     @PlannedRemoval("1.2.0")
     @Deprecated("use member function.", replaceWith = ReplaceWith("event.accept()"), level = DeprecationLevel.ERROR)
     @JvmSynthetic
-    public abstract suspend fun acceptInvitedJoinGroupRequest(event: BotInvitedJoinGroupRequestEvent)
+    abstract suspend fun acceptInvitedJoinGroupRequest(event: BotInvitedJoinGroupRequestEvent)
 
     /**
      * 忽略邀请入群（需管理员权限）
@@ -337,7 +331,7 @@ public abstract class Bot internal constructor(
     @PlannedRemoval("1.2.0")
     @Deprecated("use member function.", replaceWith = ReplaceWith("event.ignore()"), level = DeprecationLevel.ERROR)
     @JvmSynthetic
-    public abstract suspend fun ignoreInvitedJoinGroupRequest(event: BotInvitedJoinGroupRequestEvent)
+    abstract suspend fun ignoreInvitedJoinGroupRequest(event: BotInvitedJoinGroupRequestEvent)
 
     // endregion
 
@@ -351,16 +345,16 @@ public abstract class Bot internal constructor(
      *
      * @see closeAndJoin 取消并 [Bot.join], 以确保 [Bot] 相关的活动被完全关闭
      */
-    public abstract fun close(cause: Throwable? = null)
+    abstract fun close(cause: Throwable? = null)
 
-    public final override fun toString(): String = "Bot($id)"
+    final override fun toString(): String = "Bot($id)"
 }
 
 /**
  * 获取 [Job] 的协程 [Job]. 此 [Job] 为一个 [SupervisorJob]
  */
 @get:JvmSynthetic
-public val Bot.supervisorJob: CompletableJob
+val Bot.supervisorJob: CompletableJob
     get() = this.coroutineContext[Job] as CompletableJob
 
 /**
@@ -368,7 +362,7 @@ public val Bot.supervisorJob: CompletableJob
  * 即使 [Bot] 离线, 也会等待直到协程关闭.
  */
 @JvmSynthetic
-public suspend inline fun Bot.join(): Unit = this.coroutineContext[Job]!!.join()
+suspend inline fun Bot.join() = this.coroutineContext[Job]!!.join()
 
 /**
  * 撤回这条消息.
@@ -380,7 +374,7 @@ public suspend inline fun Bot.join(): Unit = this.coroutineContext[Job]!!.join()
  * @see Bot.recall
  */
 @JvmSynthetic
-public suspend inline fun Bot.recall(message: MessageChain): Unit =
+suspend inline fun Bot.recall(message: MessageChain) =
     this.recall(message.source)
 
 /**
@@ -391,7 +385,7 @@ public suspend inline fun Bot.recall(message: MessageChain): Unit =
  * @see recall
  */
 @JvmSynthetic
-public inline fun CoroutineScope.recallIn(
+inline fun CoroutineScope.recallIn(
     source: MessageSource,
     millis: Long,
     coroutineContext: CoroutineContext = EmptyCoroutineContext
@@ -408,7 +402,7 @@ public inline fun CoroutineScope.recallIn(
  * @see recall
  */
 @JvmSynthetic
-public inline fun CoroutineScope.recallIn(
+inline fun CoroutineScope.recallIn(
     message: MessageChain,
     millis: Long,
     coroutineContext: CoroutineContext = EmptyCoroutineContext
@@ -425,19 +419,19 @@ public inline fun CoroutineScope.recallIn(
  * @param cause 原因. 为 null 时视为正常关闭, 非 null 时视为异常关闭
  */
 @JvmSynthetic
-public suspend inline fun Bot.closeAndJoin(cause: Throwable? = null) {
+suspend inline fun Bot.closeAndJoin(cause: Throwable? = null) {
     close(cause)
     coroutineContext[Job]?.join()
 }
 
 @JvmSynthetic
-public inline fun Bot.containsFriend(id: Long): Boolean = this.friends.contains(id)
+inline fun Bot.containsFriend(id: Long): Boolean = this.friends.contains(id)
 
 @JvmSynthetic
-public inline fun Bot.containsGroup(id: Long): Boolean = this.groups.contains(id)
+inline fun Bot.containsGroup(id: Long): Boolean = this.groups.contains(id)
 
 @JvmSynthetic
-public inline fun Bot.getFriendOrNull(id: Long): Friend? = this.friends.getOrNull(id)
+inline fun Bot.getFriendOrNull(id: Long): Friend? = this.friends.getOrNull(id)
 
 @JvmSynthetic
-public inline fun Bot.getGroupOrNull(id: Long): Group? = this.groups.getOrNull(id)
+inline fun Bot.getGroupOrNull(id: Long): Group? = this.groups.getOrNull(id)

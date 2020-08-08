@@ -31,7 +31,7 @@ import kotlin.jvm.JvmSynthetic
 /**
  * 判断两个 [MessageEvent] 的 [MessageEvent.sender] 和 [MessageEvent.subject] 是否相同
  */
-public fun MessageEvent.isContextIdenticalWith(another: MessageEvent): Boolean {
+fun MessageEvent.isContextIdenticalWith(another: MessageEvent): Boolean {
     return this.sender == another.sender && this.subject == another.subject
 }
 
@@ -47,7 +47,7 @@ public fun MessageEvent.isContextIdenticalWith(another: MessageEvent): Boolean {
  * @see syncFromEvent 实现原理
  */
 @JvmSynthetic
-public suspend inline fun <reified P : MessageEvent> P.nextMessage(
+suspend inline fun <reified P : MessageEvent> P.nextMessage(
     timeoutMillis: Long = -1,
     priority: Listener.EventPriority = EventPriority.MONITOR,
     noinline filter: suspend P.(P) -> Boolean = { true }
@@ -69,7 +69,7 @@ public suspend inline fun <reified P : MessageEvent> P.nextMessage(
  * @see syncFromEventOrNull 实现原理
  */
 @JvmSynthetic
-public suspend inline fun <reified P : MessageEvent> P.nextMessageOrNull(
+suspend inline fun <reified P : MessageEvent> P.nextMessageOrNull(
     timeoutMillis: Long,
     priority: Listener.EventPriority = EventPriority.MONITOR,
     noinline filter: suspend P.(P) -> Boolean = { true }
@@ -84,7 +84,7 @@ public suspend inline fun <reified P : MessageEvent> P.nextMessageOrNull(
  * @see nextMessage
  */
 @JvmSynthetic
-public inline fun <reified P : MessageEvent> P.nextMessageAsync(
+inline fun <reified P : MessageEvent> P.nextMessageAsync(
     timeoutMillis: Long = -1,
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     priority: Listener.EventPriority = EventPriority.MONITOR,
@@ -101,7 +101,7 @@ public inline fun <reified P : MessageEvent> P.nextMessageAsync(
  * @see nextMessageOrNull
  */
 @JvmSynthetic
-public inline fun <reified P : MessageEvent> P.nextMessageOrNullAsync(
+inline fun <reified P : MessageEvent> P.nextMessageOrNullAsync(
     timeoutMillis: Long,
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
     priority: Listener.EventPriority = EventPriority.MONITOR,
@@ -118,6 +118,6 @@ public inline fun <reified P : MessageEvent> P.nextMessageOrNullAsync(
 @Deprecated("for binary compatibility", level = DeprecationLevel.HIDDEN)
 @Suppress("DEPRECATION_ERROR")
 @JvmSynthetic
-public fun ContactMessage.isContextIdenticalWith(another: ContactMessage): Boolean {
+fun ContactMessage.isContextIdenticalWith(another: ContactMessage): Boolean {
     return this.sender == another.sender && this.subject == another.subject && this.bot == another.bot
 }
