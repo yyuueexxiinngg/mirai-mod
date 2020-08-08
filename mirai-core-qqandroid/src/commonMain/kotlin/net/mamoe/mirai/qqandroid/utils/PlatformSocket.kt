@@ -12,13 +12,14 @@ package net.mamoe.mirai.qqandroid.utils
 import kotlinx.io.core.ByteReadPacket
 import kotlinx.io.core.Closeable
 import kotlinx.io.errors.IOException
+import net.mamoe.mirai.utils.Throws
 import kotlin.coroutines.CoroutineContext
 
 /**
  * 多平台适配的 TCP Socket.
  */
 internal expect class PlatformSocket() : Closeable {
-    @kotlin.Throws(SocketException::class)
+    @Throws(SocketException::class)
     suspend fun connect(coroutineContext: CoroutineContext, serverHost: String, serverPort: Int)
 
     /**
@@ -41,6 +42,6 @@ internal expect class PlatformSocket() : Closeable {
     override fun close()
 }
 
-internal expect open class SocketException : IOException
-internal expect class NoRouteToHostException : SocketException
-internal expect class UnknownHostException : IOException
+expect open class SocketException : IOException
+expect class NoRouteToHostException : SocketException
+expect class UnknownHostException : IOException

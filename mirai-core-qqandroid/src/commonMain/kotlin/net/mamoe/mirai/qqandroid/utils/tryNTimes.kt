@@ -6,7 +6,6 @@
  *
  * https://github.com/mamoe/mirai/blob/master/LICENSE
  */
-
 @file:Suppress("DuplicatedCode")
 
 @file:JvmMultifileClass

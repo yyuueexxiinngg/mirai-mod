@@ -11,6 +11,8 @@ package net.mamoe.mirai.utils.internal
 
 import kotlin.reflect.KClass
 
+internal expect fun Throwable.addSuppressedMirai(e: Throwable)
+
 
 // Currently we can't share internal code between modules.
 @Suppress("DuplicatedCode", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "RESULT_CLASS_IN_RETURN_TYPE")
@@ -31,7 +33,7 @@ internal inline fun <R> retryCatching(
             if (except?.isInstance(e) == true) {
                 return Result.failure(e)
             }
-            exception?.addSuppressed(e)
+            exception?.addSuppressedMirai(e)
             exception = e
         }
     }

@@ -22,6 +22,7 @@ import net.mamoe.mirai.message.data.sendTo
 import net.mamoe.mirai.message.data.toUHexString
 import net.mamoe.mirai.utils.internal.DeferredReusableInput
 import net.mamoe.mirai.utils.internal.ReusableInput
+import kotlin.jvm.JvmField
 import kotlin.jvm.JvmSynthetic
 
 /**
@@ -33,9 +34,10 @@ import kotlin.jvm.JvmSynthetic
  * @See ExternalImage.upload 上传图片并得到 [Image] 消息
  */
 public class ExternalImage internal constructor(
+    @JvmField
     internal val input: ReusableInput
 ) {
-    internal val md5: ByteArray get() = input.md5
+    internal val md5: ByteArray get() = this.input.md5
     public val formatName: String by lazy {
         val hex = input.asInput().use {
             it.readBytes(8).toUHexString("")

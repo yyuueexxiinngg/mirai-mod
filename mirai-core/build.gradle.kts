@@ -57,16 +57,17 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
+                api(kotlin("stdlib", Versions.Kotlin.stdlib))
                 api(kotlin("serialization"))
                 api(kotlin("reflect"))
 
-                api(kotlinx("serialization-runtime", Versions.Kotlin.serialization))
-                implementation(kotlinx("serialization-protobuf", Versions.Kotlin.serialization))
-                implementation(kotlinx("io", Versions.Kotlin.io))
-                implementation(kotlinx("coroutines-io", Versions.Kotlin.coroutinesIo))
-                api(kotlinx("coroutines-core", Versions.Kotlin.coroutines))
+                api(kotlinx("serialization-runtime-common", Versions.Kotlin.serialization))
+                api(kotlinx("serialization-protobuf-common", Versions.Kotlin.serialization))
+                api(kotlinx("io", Versions.Kotlin.io))
+                api(kotlinx("coroutines-io", Versions.Kotlin.coroutinesIo))
+                api(kotlinx("coroutines-core-common", Versions.Kotlin.coroutines))
 
-                implementation("org.jetbrains.kotlinx:atomicfu:${Versions.Kotlin.atomicFU}")
+                api("org.jetbrains.kotlinx:atomicfu-common:${Versions.Kotlin.atomicFU}")
 
                 api(ktor("client-cio"))
                 api(ktor("client-core"))
@@ -86,8 +87,11 @@ kotlin {
                 dependencies {
                     api(kotlin("reflect"))
 
-                    implementation(kotlinx("io-jvm", Versions.Kotlin.io))
-                    implementation(kotlinx("coroutines-io-jvm", Versions.Kotlin.coroutinesIo))
+                    api(kotlinx("io-jvm", Versions.Kotlin.io))
+                    api(kotlinx("serialization-runtime", Versions.Kotlin.serialization))
+                    api(kotlinx("serialization-protobuf", Versions.Kotlin.serialization))
+                    api(kotlinx("coroutines-io-jvm", Versions.Kotlin.coroutinesIo))
+                    api(kotlinx("coroutines-core", Versions.Kotlin.coroutines))
 
                     api(ktor("client-android", Versions.Kotlin.ktor))
                 }
@@ -110,9 +114,13 @@ kotlin {
                 api(kotlin("reflect"))
 
                 api(ktor("client-core-jvm", Versions.Kotlin.ktor))
-                implementation(kotlinx("io-jvm", Versions.Kotlin.io))
-                implementation(kotlinx("coroutines-io-jvm", Versions.Kotlin.coroutinesIo))
+                api(kotlinx("io-jvm", Versions.Kotlin.io))
+                api(kotlinx("serialization-runtime", Versions.Kotlin.serialization))
+                api(kotlinx("serialization-protobuf", Versions.Kotlin.serialization))
+                api(kotlinx("coroutines-io-jvm", Versions.Kotlin.coroutinesIo))
+                api(kotlinx("coroutines-core", Versions.Kotlin.coroutines))
 
+                api("org.bouncycastle:bcprov-jdk15on:1.64")
                 runtimeOnly(files("build/classes/kotlin/jvm/main")) // classpath is not properly set by IDE
             }
         }

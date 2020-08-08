@@ -48,6 +48,9 @@ kotlin {
             languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
             languageSettings.useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
 
+            languageSettings.languageVersion = "1.3"
+            languageSettings.apiVersion = "1.3"
+
             languageSettings.progressiveMode = true
 
             dependencies {
@@ -57,13 +60,13 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-                api(kotlinx("serialization-runtime", Versions.Kotlin.serialization))
-                implementation(kotlinx("serialization-protobuf", Versions.Kotlin.serialization))
+                api(kotlin("stdlib", Versions.Kotlin.stdlib))
+                api(kotlinx("serialization-runtime-common", Versions.Kotlin.serialization))
+                api(kotlinx("serialization-protobuf-common", Versions.Kotlin.serialization))
+                api("moe.him188:jcekt-common:${Versions.jcekt}")
                 api("org.jetbrains.kotlinx:atomicfu:${Versions.Kotlin.atomicFU}")
-                implementation(kotlinx("io", Versions.Kotlin.io))
-                implementation(kotlinx("coroutines-io", Versions.Kotlin.coroutinesIo))
-                //implementation("moe.him188:jcekt:${Versions.jcekt}")
-                implementation("moe.him188:jcekt:${Versions.jcekt}")
+                api(kotlinx("io", Versions.Kotlin.io))
+                api(kotlinx("coroutines-io", Versions.Kotlin.coroutinesIo))
             }
         }
 
@@ -78,6 +81,7 @@ kotlin {
         if (isAndroidSDKAvailable) {
             val androidMain by getting {
                 dependencies {
+                    api(kotlinx("serialization-protobuf", Versions.Kotlin.serialization))
                 }
             }
 
@@ -94,8 +98,11 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 runtimeOnly(files("build/classes/kotlin/jvm/main")) // classpath is not properly set by IDE
-                implementation("org.bouncycastle:bcprov-jdk15on:1.64")
                 //    api(kotlinx("coroutines-debug", Versions.Kotlin.coroutines))
+                api("moe.him188:jcekt:${Versions.jcekt}")
+                api(kotlinx("serialization-runtime", Versions.Kotlin.serialization))
+                //api(kotlinx("serialization-protobuf", Versions.Kotlin.serialization))
+
             }
         }
 

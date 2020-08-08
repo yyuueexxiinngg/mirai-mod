@@ -90,11 +90,9 @@ internal actual class PlatformSocket : Closeable {
     }
 }
 
-@Suppress("ACTUAL_WITHOUT_EXPECT")
-internal actual typealias NoRouteToHostException = java.net.NoRouteToHostException
+actual typealias NoRouteToHostException = java.net.NoRouteToHostException
 
-@Suppress("ACTUAL_WITHOUT_EXPECT")
-internal actual typealias SocketException = SocketException
+actual typealias SocketException = SocketException
 
 // ktor aSocket
 
@@ -204,5 +202,4 @@ actual typealias NoRouteToHostException = java.net.NoRouteToHostException
 
 actual typealias SocketException = SocketException
  */
-@Suppress("ACTUAL_WITHOUT_EXPECT")
-internal actual typealias UnknownHostException = java.net.UnknownHostException
+actual typealias UnknownHostException = java.net.UnknownHostException

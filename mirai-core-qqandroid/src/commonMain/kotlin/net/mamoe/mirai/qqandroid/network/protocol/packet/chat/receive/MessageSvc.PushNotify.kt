@@ -18,6 +18,7 @@ import net.mamoe.mirai.qqandroid.network.protocol.data.proto.MsgSvc
 import net.mamoe.mirai.qqandroid.network.protocol.packet.IncomingPacketFactory
 import net.mamoe.mirai.qqandroid.network.protocol.packet.OutgoingPacket
 import net.mamoe.mirai.qqandroid.utils.io.serialization.readUniPacket
+import net.mamoe.mirai.utils.currentTimeSeconds
 
 
 /**
@@ -36,6 +37,7 @@ internal object MessageSvcPushNotify : IncomingPacketFactory<RequestPushNotify>(
                 return MessageSvcPbGetMsg(
                     client,
                     MsgSvc.SyncFlag.START,
+                    packet.stMsgInfo?.uMsgTime ?: currentTimeSeconds,
                     if (firstNotify) {
                         if (!client.c2cMessageSync.firstNotify.compareAndSet(firstNotify, false)) {
                             return@loop

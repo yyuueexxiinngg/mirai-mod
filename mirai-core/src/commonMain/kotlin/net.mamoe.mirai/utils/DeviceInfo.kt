@@ -69,7 +69,7 @@ public abstract class DeviceInfo {
             @ProtoId(9) val innerVersion: ByteArray
         )
 
-        return ProtoBuf.encodeToByteArray(
+        return ProtoBuf.dump(
             DevInfo.serializer(), DevInfo(
                 bootloader,
                 procVersion,

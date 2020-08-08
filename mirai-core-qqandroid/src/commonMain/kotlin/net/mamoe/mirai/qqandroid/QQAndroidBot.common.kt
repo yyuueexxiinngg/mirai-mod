@@ -18,8 +18,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.int
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.LowLevelAPI
 import net.mamoe.mirai.contact.*
@@ -299,7 +297,7 @@ internal abstract class QQAndroidBotBase constructor(
     }
 
     fun getGroupByUinOrNull(uin: Long): Group? {
-        return groups.firstOrNull { it.checkIsGroupImpl(); it.uin == uin }
+        return groups.asSequence().firstOrNull { it.checkIsGroupImpl(); it.uin == uin }
     }
 
     @OptIn(LowLevelAPI::class)
@@ -489,7 +487,7 @@ internal abstract class QQAndroidBotBase constructor(
 
         val rep = data.await()
 //        bot.network.logger.error(rep)
-        return json.decodeFromString(GroupAnnouncementList.serializer(), rep)
+        return json.parse(GroupAnnouncementList.serializer(), rep)
     }
 
     @LowLevelAPI
@@ -505,7 +503,7 @@ internal abstract class QQAndroidBotBase constructor(
                     append("pinned", announcement.pinned)
                     append(
                         "settings",
-                        json.encodeToString(
+                        json.stringify(
                             GroupAnnouncementSettings.serializer(),
                             announcement.settings ?: GroupAnnouncementSettings()
                         )
@@ -523,8 +521,8 @@ internal abstract class QQAndroidBotBase constructor(
                 }
             }
         }
-        val jsonObj = json.parseToJsonElement(rep)
-        return jsonObj.jsonObject["new_fid"]?.jsonPrimitive?.content
+        val jsonObj = json.parseJson(rep)
+        return jsonObj.jsonObject["new_fid"]?.primitive?.content
             ?: throw throw IllegalStateException("Send Announcement fail group:$groupId msg:${jsonObj.jsonObject["em"]} content:${announcement.msg.text}")
     }
 
@@ -551,8 +549,8 @@ internal abstract class QQAndroidBotBase constructor(
                 }
             }
         }
-        val jsonObj = json.parseToJsonElement(data)
-        if (jsonObj.jsonObject["ec"]?.jsonPrimitive?.int ?: 1 != 0) {
+        val jsonObj = json.parseJson(data)
+        if (jsonObj.jsonObject["ec"]?.int ?: 1 != 0) {
             throw throw IllegalStateException("delete Announcement fail group:$groupId msg:${jsonObj.jsonObject["em"]} fid:$fid")
         }
     }
@@ -580,7 +578,7 @@ internal abstract class QQAndroidBotBase constructor(
 
         val rep = data.await()
 //        bot.network.logger.error(rep)
-        return json.decodeFromString(GroupAnnouncement.serializer(), rep)
+        return json.parse(GroupAnnouncement.serializer(), rep)
 
     }
 
@@ -604,7 +602,7 @@ internal abstract class QQAndroidBotBase constructor(
             }
         }
         val rep = data.await()
-        return json.decodeFromString(GroupActiveData.serializer(), rep)
+        return json.parse(GroupActiveData.serializer(), rep)
     }
 
     @JvmSynthetic
@@ -800,16 +798,11 @@ internal abstract class QQAndroidBotBase constructor(
         groupId: Long,
         dstUin: Long
     ): String {
-        network.run {
+          network.run {
             val response: PttStore.GroupPttDown.Response.DownLoadInfo =
-                PttStore.GroupPttDown(client, groupId, dstUin, md5).sendAndExpect()
+                PttStore.GroupPttDown(client, groupId, dstUin,md5).sendAndExpect()
             return "http://${response.strDomain}${response.downPara.encodeToString()}"
         }
-    }
-
-    @LowLevelAPI
-    override suspend fun _lowLevelUploadVoice(md5: ByteArray, groupId: Long) {
-
     }
 
     @Suppress("DEPRECATION", "OverridingDeprecatedMember")

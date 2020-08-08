@@ -9,7 +9,7 @@
 
 package net.mamoe.mirai.qqandroid.network.protocol
 
-internal inline class LoginType(
+inline class LoginType(
     val value: Int
 ) {
     companion object {
@@ -17,7 +17,6 @@ internal inline class LoginType(
          * 短信验证登录
          */
         val SMS = LoginType(3)
-
         /**
          * 密码登录
          */
