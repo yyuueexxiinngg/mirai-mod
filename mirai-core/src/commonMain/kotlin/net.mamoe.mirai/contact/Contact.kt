@@ -24,6 +24,7 @@ import net.mamoe.mirai.message.recall
 import net.mamoe.mirai.recall
 import net.mamoe.mirai.recallIn
 import net.mamoe.mirai.utils.ExternalImage
+import net.mamoe.mirai.utils.ExternalPtt
 import net.mamoe.mirai.utils.OverFileSizeMaxException
 import net.mamoe.mirai.utils.WeakRefProperty
 import kotlin.coroutines.CoroutineContext
@@ -88,6 +89,9 @@ abstract class Contact : ContactOrBot, CoroutineScope, ContactJavaFriendlyAPI {
      */
     @JvmSynthetic
     abstract suspend fun uploadImage(image: ExternalImage): Image
+
+    @JvmSynthetic
+    abstract suspend fun uploadPtt(ptt: ExternalPtt): Voice
 
     final override fun equals(other: Any?): Boolean = super.equals(other)
     final override fun hashCode(): Int = super.hashCode()

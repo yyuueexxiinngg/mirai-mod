@@ -20,12 +20,10 @@ import net.mamoe.mirai.event.CancellableEvent
 import net.mamoe.mirai.event.events.ImageUploadEvent.Failed
 import net.mamoe.mirai.event.events.ImageUploadEvent.Succeed
 import net.mamoe.mirai.message.MessageReceipt
-import net.mamoe.mirai.message.data.Image
-import net.mamoe.mirai.message.data.Message
-import net.mamoe.mirai.message.data.MessageChain
-import net.mamoe.mirai.message.data.MessageSource
+import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.qqandroid.network.Packet
 import net.mamoe.mirai.utils.ExternalImage
+import net.mamoe.mirai.utils.ExternalPtt
 import net.mamoe.mirai.utils.PlannedRemoval
 import net.mamoe.mirai.utils.SinceMirai
 import kotlin.internal.InlineOnly
@@ -358,6 +356,15 @@ data class BeforeImageUploadEvent internal constructor(
         get() = target.bot
 }
 
+data class BeforePttUploadEvent internal constructor(
+    val target: Contact,
+    val source: ExternalPtt
+) : BotEvent, BotActiveEvent, AbstractEvent(), CancellableEvent {
+    override val bot: Bot
+        get() = target.bot
+}
+
+
 /**
  * 图片上传完成.
  *
@@ -389,6 +396,25 @@ sealed class ImageUploadEvent : BotEvent, BotActiveEvent, AbstractEvent() {
     ) : ImageUploadEvent()
 }
 
+sealed class PttUploadEvent : BotEvent, BotActiveEvent, AbstractEvent() {
+    abstract val target: Contact
+    abstract val source: ExternalPtt
+    override val bot: Bot
+        get() = target.bot
+
+    data class Succeed internal constructor(
+        override val target: Contact,
+        override val source: ExternalPtt,
+        val image: Voice
+    ) : PttUploadEvent()
+
+    data class Failed internal constructor(
+        override val target: Contact,
+        override val source: ExternalPtt,
+        val errno: Int,
+        val message: String
+    ) : PttUploadEvent()
+}
 
 // region deprecated
 

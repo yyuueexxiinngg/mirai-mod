@@ -235,6 +235,7 @@ fun CoroutineScope.registerEvents(host: ListenerHost, coroutineContext: Coroutin
     }
 }
 
+/*
 
 @Suppress("UNCHECKED_CAST")
 private fun Method.registerEvent(
@@ -377,4 +378,4 @@ private fun Method.registerEvent(
             else -> error("Illegal method return type. Required Void or ListeningStatus, but found ${this.returnType.canonicalName}")
         }
     }
-}
+}*/

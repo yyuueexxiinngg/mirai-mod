@@ -9,6 +9,7 @@ import net.mamoe.mirai.qqandroid.network.protocol.data.proto.Cmd0x388
 import net.mamoe.mirai.qqandroid.network.protocol.packet.OutgoingPacket
 import net.mamoe.mirai.qqandroid.network.protocol.packet.OutgoingPacketFactory
 import net.mamoe.mirai.qqandroid.network.protocol.packet.buildOutgoingUniPacket
+import net.mamoe.mirai.qqandroid.network.protocol.packet.chat.image.ImgStore
 import net.mamoe.mirai.qqandroid.utils.encodeToString
 import net.mamoe.mirai.qqandroid.utils.io.serialization.readProtoBuf
 import net.mamoe.mirai.qqandroid.utils.io.serialization.writeProtoBuf
@@ -17,6 +18,13 @@ internal class PttStore {
     object GroupPttUp : OutgoingPacketFactory<GroupPttUp.Response>("PttStore.GroupPttUp") {
 
         sealed class Response : Packet {
+            class FileExists(
+                val fileId: Long
+            ) : GroupPttUp.Response() {
+                override fun toString(): String {
+                    return "FileExists(fileId=$fileId)"
+                }
+            }
 
             class RequireUpload(
                 val fileId: Long,
@@ -29,6 +37,11 @@ internal class PttStore {
                     return "RequireUpload(fileId=$fileId, uKey=${uKey.contentToString()})"
                 }
             }
+
+            data class Failed(
+                val resultCode: Int,
+                val message: String
+            ) : GroupPttUp.Response()
         }
 
         @OptIn(ExperimentalStdlibApi::class)
@@ -74,19 +87,22 @@ internal class PttStore {
             val resp0 = readProtoBuf(Cmd0x388.RspBody.serializer())
             resp0.msgTryupPttRsp ?: error("cannot find `msgTryupPttRsp` from `Cmd0x388.RspBody`")
             val resp = resp0.msgTryupPttRsp.first()
-            if (resp.failMsg != null) {
-                throw IllegalStateException(resp.failMsg.encodeToString())
+
+            return when {
+                resp.result != 0 -> Response.Failed(
+                    resultCode = resp.result,
+                    message = resp.failMsg?.encodeToString() ?: ""
+                )
+                resp.boolFileExit -> Response.FileExists(fileId = resp.fileid)
+                else -> Response.RequireUpload(
+                    fileId = resp.fileid,
+                    uKey = resp.upUkey,
+                    uploadIpList = resp.uint32UpIp!!,
+                    uploadPortList = resp.uint32UpPort!!,
+                    fileKey = resp.fileKey
+                )
             }
-            return Response.RequireUpload(
-                fileId = resp.fileid,
-                uKey = resp.upUkey,
-                uploadIpList = resp.uint32UpIp!!,
-                uploadPortList = resp.uint32UpPort!!,
-                fileKey = resp.fileKey
-            )
-
         }
-
     }
 
     object GroupPttDown : OutgoingPacketFactory<GroupPttDown.Response>("PttStore.GroupPttDown") {

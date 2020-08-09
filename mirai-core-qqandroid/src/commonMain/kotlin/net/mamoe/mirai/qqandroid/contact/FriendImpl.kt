@@ -31,10 +31,7 @@ import net.mamoe.mirai.event.events.BeforeImageUploadEvent
 import net.mamoe.mirai.event.events.EventCancelledException
 import net.mamoe.mirai.event.events.ImageUploadEvent
 import net.mamoe.mirai.message.MessageReceipt
-import net.mamoe.mirai.message.data.Image
-import net.mamoe.mirai.message.data.Message
-import net.mamoe.mirai.message.data.OfflineFriendImage
-import net.mamoe.mirai.message.data.isContentNotEmpty
+import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.qqandroid.QQAndroidBot
 import net.mamoe.mirai.qqandroid.network.highway.postImage
 import net.mamoe.mirai.qqandroid.network.highway.sizeToString
@@ -42,10 +39,7 @@ import net.mamoe.mirai.qqandroid.network.protocol.data.proto.Cmd0x352
 import net.mamoe.mirai.qqandroid.network.protocol.packet.chat.image.LongConn
 import net.mamoe.mirai.qqandroid.utils.MiraiPlatformUtils
 import net.mamoe.mirai.qqandroid.utils.toUHexString
-import net.mamoe.mirai.utils.ExternalImage
-import net.mamoe.mirai.utils.getValue
-import net.mamoe.mirai.utils.unsafeWeakRef
-import net.mamoe.mirai.utils.verbose
+import net.mamoe.mirai.utils.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
@@ -169,4 +163,9 @@ internal class FriendImpl(
         @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
         (image.input as? Closeable)?.close()
     }
+
+    override suspend fun uploadPtt(ptt: ExternalPtt): Voice {
+        TODO("Not yet implemented")
+    }
+
 }

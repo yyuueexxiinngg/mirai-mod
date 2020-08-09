@@ -29,10 +29,7 @@ import net.mamoe.mirai.qqandroid.network.protocol.data.jce.StTroopMemberInfo
 import net.mamoe.mirai.qqandroid.network.protocol.packet.chat.TroopManagement
 import net.mamoe.mirai.qqandroid.network.protocol.packet.chat.receive.MessageSvcPbSendMsg
 import net.mamoe.mirai.qqandroid.network.protocol.packet.chat.receive.createToTemp
-import net.mamoe.mirai.utils.ExternalImage
-import net.mamoe.mirai.utils.currentTimeSeconds
-import net.mamoe.mirai.utils.getValue
-import net.mamoe.mirai.utils.unsafeWeakRef
+import net.mamoe.mirai.utils.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
@@ -112,6 +109,9 @@ internal class MemberImpl constructor(
 
     @JvmSynthetic
     override suspend fun uploadImage(image: ExternalImage): Image = qq.uploadImage(image)
+    override suspend fun uploadPtt(ptt: ExternalPtt): Voice {
+        TODO("Not yet implemented")
+    }
 
     override var permission: MemberPermission = memberInfo.permission
 

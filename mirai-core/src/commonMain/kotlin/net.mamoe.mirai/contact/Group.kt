@@ -18,10 +18,7 @@ import net.mamoe.mirai.LowLevelAPI
 import net.mamoe.mirai.data.MemberInfo
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.MessageReceipt
-import net.mamoe.mirai.message.data.Image
-import net.mamoe.mirai.message.data.Message
-import net.mamoe.mirai.message.data.isContentEmpty
-import net.mamoe.mirai.message.data.toMessage
+import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.recall
 import net.mamoe.mirai.utils.*
 import net.mamoe.mirai.utils.internal.runBlocking
@@ -173,6 +170,9 @@ abstract class Group : Contact(), CoroutineScope {
      */
     @JvmSynthetic
     abstract override suspend fun uploadImage(image: ExternalImage): Image
+
+    @JvmSynthetic
+    abstract override suspend fun uploadPtt(ptt: ExternalPtt): Voice
 
     companion object {
         /**

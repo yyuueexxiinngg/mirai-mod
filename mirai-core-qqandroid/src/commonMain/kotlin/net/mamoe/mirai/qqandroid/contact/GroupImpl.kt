@@ -33,8 +33,11 @@ import net.mamoe.mirai.qqandroid.network.protocol.packet.chat.TroopManagement
 import net.mamoe.mirai.qqandroid.network.protocol.packet.chat.image.ImgStore
 import net.mamoe.mirai.qqandroid.network.protocol.packet.chat.receive.MessageSvcPbSendMsg
 import net.mamoe.mirai.qqandroid.network.protocol.packet.chat.receive.createToGroup
+import net.mamoe.mirai.qqandroid.network.protocol.packet.chat.voice.PttStore
 import net.mamoe.mirai.qqandroid.network.protocol.packet.list.ProfileService
+import net.mamoe.mirai.qqandroid.utils.encodeToString
 import net.mamoe.mirai.qqandroid.utils.estimateLength
+import net.mamoe.mirai.qqandroid.utils.toUHexString
 import net.mamoe.mirai.utils.*
 import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
@@ -130,18 +133,18 @@ internal class GroupImpl(
             set(newValue) {
                 checkBotPermission(MemberPermission.ADMINISTRATOR)
                 //if (_announcement != newValue) {
-                    val oldValue = _announcement
-                    _announcement = newValue
-                    launch {
-                        bot.network.run {
-                            TroopManagement.GroupOperation.memo(
-                                client = bot.client,
-                                groupCode = id,
-                                newMemo = newValue
-                            ).sendWithoutExpect()
-                        }
-                        GroupEntranceAnnouncementChangeEvent(oldValue, newValue, this@GroupImpl, null).broadcast()
+                val oldValue = _announcement
+                _announcement = newValue
+                launch {
+                    bot.network.run {
+                        TroopManagement.GroupOperation.memo(
+                            client = bot.client,
+                            groupCode = id,
+                            newMemo = newValue
+                        ).sendWithoutExpect()
                     }
+                    GroupEntranceAnnouncementChangeEvent(oldValue, newValue, this@GroupImpl, null).broadcast()
+                }
                 //}
             }
 
@@ -151,18 +154,18 @@ internal class GroupImpl(
             set(newValue) {
                 checkBotPermission(MemberPermission.ADMINISTRATOR)
                 //if (_allowMemberInvite != newValue) {
-                    val oldValue = _allowMemberInvite
-                    _allowMemberInvite = newValue
-                    launch {
-                        bot.network.run {
-                            TroopManagement.GroupOperation.allowMemberInvite(
-                                client = bot.client,
-                                groupCode = id,
-                                switch = newValue
-                            ).sendWithoutExpect()
-                        }
-                        GroupAllowMemberInviteEvent(oldValue, newValue, this@GroupImpl, null).broadcast()
+                val oldValue = _allowMemberInvite
+                _allowMemberInvite = newValue
+                launch {
+                    bot.network.run {
+                        TroopManagement.GroupOperation.allowMemberInvite(
+                            client = bot.client,
+                            groupCode = id,
+                            switch = newValue
+                        ).sendWithoutExpect()
                     }
+                    GroupAllowMemberInviteEvent(oldValue, newValue, this@GroupImpl, null).broadcast()
+                }
                 //}
             }
 
@@ -208,18 +211,18 @@ internal class GroupImpl(
             set(newValue) {
                 checkBotPermission(MemberPermission.ADMINISTRATOR)
                 //if (_muteAll != newValue) {
-                    val oldValue = _muteAll
-                    _muteAll = newValue
-                    launch {
-                        bot.network.run {
-                            TroopManagement.GroupOperation.muteAll(
-                                client = bot.client,
-                                groupCode = id,
-                                switch = newValue
-                            ).sendWithoutExpect()
-                        }
-                        GroupMuteAllEvent(oldValue, newValue, this@GroupImpl, null).broadcast()
+                val oldValue = _muteAll
+                _muteAll = newValue
+                launch {
+                    bot.network.run {
+                        TroopManagement.GroupOperation.muteAll(
+                            client = bot.client,
+                            groupCode = id,
+                            switch = newValue
+                        ).sendWithoutExpect()
                     }
+                    GroupMuteAllEvent(oldValue, newValue, this@GroupImpl, null).broadcast()
+                }
                 //}
             }
     }
@@ -442,6 +445,62 @@ internal class GroupImpl(
     } finally {
         (image.input as? Closeable)?.close()
     }
+
+    @Suppress("DEPRECATION")
+    @OptIn(ExperimentalTime::class)
+    @JvmSynthetic
+    override suspend fun uploadPtt(ptt: ExternalPtt): Voice = try {
+        @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+        if (BeforePttUploadEvent(this, ptt).broadcast().isCancelled) {
+            throw EventCancelledException("cancelled by BeforePttUploadEvent.ToGroup")
+        }
+        bot.network.run {
+            val response: PttStore.GroupPttUp.Response = PttStore.GroupPttUp(
+                bot.client,
+                uin = bot.id,
+                groupCode = id,
+                md5 = ptt.md5,
+                size = ptt.data.size.toLong(),
+                voiceLength = ptt.data.size
+            ).sendAndExpect()
+
+            @Suppress("UNCHECKED_CAST") // bug
+            when (response) {
+                is PttStore.GroupPttUp.Response.Failed -> {
+                    PttUploadEvent.Failed(this@GroupImpl, ptt, response.resultCode, response.message).broadcast()
+                    if (response.message == "over file size max") throw OverFileSizeMaxException()
+                    error("upload ptt failed with reason ${response.message}")
+                }
+                is PttStore.GroupPttUp.Response.FileExists -> {
+
+                    return Voice(
+                        fileName = ptt.md5.toUHexString("") + ".amr",
+                        md5 = ptt.md5,
+                        fileSize = ptt.data.size.toLong(),
+                        _url = ""
+                    ).also {
+                        PttUploadEvent.Succeed(this@GroupImpl, ptt, it).broadcast()
+                    }
+                }
+                is PttStore.GroupPttUp.Response.RequireUpload -> {
+                    HighwayHelper.uploadPttToServers(
+                        bot,
+                        response.uploadIpList.zip(response.uploadPortList),
+                        ptt.data,
+                        ptt.md5,
+                        response.uKey,
+                        response.fileKey
+                    )
+                    return Voice(
+                        fileName = ptt.md5.toUHexString("") + ".amr",
+                        md5 = ptt.md5,
+                        fileSize = ptt.data.size.toLong(),
+                        _url = ""
+                    ).also { PttUploadEvent.Succeed(this@GroupImpl, ptt, it).broadcast() }
+                }
+            }
+        }
+    } finally { }
 
     override fun toString(): String = "Group($id)"
 }
