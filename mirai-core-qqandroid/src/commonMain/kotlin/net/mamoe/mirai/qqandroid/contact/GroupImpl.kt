@@ -461,7 +461,8 @@ internal class GroupImpl(
                 groupCode = id,
                 md5 = ptt.md5,
                 size = ptt.data.size.toLong(),
-                voiceLength = ptt.data.size
+                voiceLength = ptt.data.size,
+                codec = ptt.codec
             ).sendAndExpect()
 
             @Suppress("UNCHECKED_CAST") // bug
@@ -489,7 +490,8 @@ internal class GroupImpl(
                         ptt.data,
                         ptt.md5,
                         response.uKey,
-                        response.fileKey
+                        response.fileKey,
+                        ptt.codec
                     )
                     return Voice(
                         fileName = ptt.md5.toUHexString("") + ".amr",

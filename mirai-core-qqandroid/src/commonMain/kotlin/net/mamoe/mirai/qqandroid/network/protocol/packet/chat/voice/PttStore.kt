@@ -52,7 +52,8 @@ internal class PttStore {
             md5: ByteArray,
             size: Long = 0,
             voiceLength: Int = 0,
-            fileId: Long = 0
+            fileId: Long = 0,
+            codec: Int = 0
         ): OutgoingPacket {
             val pack = Cmd0x388.ReqBody(
                 netType = 3, // wifi
@@ -71,7 +72,7 @@ internal class PttStore {
                         innerIp = 0,
                         buildVer = "6.5.5.663".encodeToByteArray(),
                         voiceLength = voiceLength,
-                        codec = 0,
+                        codec = codec,
                         voiceType = 1,
                         boolNewUpChan = true
                     )
@@ -127,7 +128,8 @@ internal class PttStore {
             client: QQAndroidClient,
             groupCode: Long,
             dstUin: Long,
-            md5: ByteArray
+            md5: ByteArray,
+            codec: Int = 0
 
         ): OutgoingPacket = buildOutgoingUniPacket(client) {
             writeProtoBuf(
@@ -142,7 +144,7 @@ internal class PttStore {
                             buType = 4,
                             innerIp = 0,
                             buildVer = "6.5.5.663".encodeToByteArray(),
-                            codec = 0,
+                            codec = codec,
                             reqTerm = 5,
                             reqPlatformType = 9
                         )

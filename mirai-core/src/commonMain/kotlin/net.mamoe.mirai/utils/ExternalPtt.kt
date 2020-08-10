@@ -18,13 +18,11 @@ class ExternalPtt internal constructor(
     internal val data: ByteArray
 ) {
     internal val md5: ByteArray get() = this.data.md5()
-    val formatName: String by lazy {
-        val hex = data.copyOfRange(0, 8).toUHexString("")
-        return@lazy hex.detectFormatName()
-    }
+    val formatName: String
+    val codec: Int
 
     override fun toString(): String {
-        return "ExternalPtt($md5.amr)"
+        return "ExternalPtt($md5.$formatName)"
     }
 
     companion object {
@@ -32,11 +30,18 @@ class ExternalPtt internal constructor(
     }
 
     init {
-        require(formatName == "amr") { "Currently only support amr upload" }
+        formatName = data.copyOfRange(0, 10).toUHexString("").detectFormatName()
+        codec = when (formatName) {
+            "amr" -> 0
+            "silk" -> 1
+            else -> 1
+        }
+//        require(formatName != "mirai") { "Currently only support amr or silk v3 upload" }
     }
 
     private fun String.detectFormatName(): String = when {
         startsWith("2321414D52") -> "amr"
+        startsWith("02232153494C4B5F5633") -> "silk"
         else -> defaultFormatName
     }
 }
